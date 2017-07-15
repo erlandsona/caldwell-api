@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+
+  caldwell-servant:
+    build: .
+    image: caldwell-servant
+    command: caldwell-servant
+    expose:
+      - "1234"
+    volumes:
+      - .:/app
+
+  nginx:
+    build: ./nginx
+    image: nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - caldwell-servant
