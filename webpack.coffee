@@ -6,7 +6,7 @@ autoprefixer = require 'autoprefixer'
 ExtractTextPlugin = require 'extract-text-webpack-plugin'
 CopyWebpackPlugin = require 'copy-webpack-plugin'
 
-entryFile = path.resolve __dirname, 'app/index.coffee'
+entryFile = path.resolve __dirname, 'app/Client/index.coffee'
 outputPath = path.resolve __dirname, 'public'
 
 # determine build env
@@ -54,17 +54,17 @@ commonConfig =
 
   plugins: [
     new HtmlWebpackPlugin
-      template: 'app/index.html'
+      template: 'app/Client/index.html'
 
     new CopyWebpackPlugin [
-      from: 'app/assets/images/'
+      from: 'app/Client/assets/images/'
       to:   'images/'
     ,
-      from: 'app/assets/icons'
+      from: 'app/Client/assets/icons'
       flatten: true
-    , { from: 'app/assets/CNAME' }
-    , { from: 'app/assets/manifest.json' }
-    , { from: 'app/assets/browserconfig.xml' }
+    , { from: 'app/Client/assets/CNAME' }
+    , { from: 'app/Client/assets/manifest.json' }
+    , { from: 'app/Client/assets/browserconfig.xml' }
     ]
   ]
 
@@ -143,7 +143,7 @@ if TARGET_ENV is 'production'
       new ExtractTextPlugin '[name]-[hash].css'
 
       new HtmlWebpackPlugin
-        template: 'app/index.html'
+        template: 'app/Client/index.html'
         # Hack github to serve elm app at all routes.
         filename: '404.html'
 

@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Main where
+module Client.Http where
 
 -- Libs
 import Elm
@@ -10,21 +10,22 @@ import Elm
     )
 -- import Servant.API  ((:>), Capture, Get, JSON)
 import Servant.Elm
-    ( Proxy (Proxy)
+    ( ElmType
+    , Proxy (Proxy)
     , defElmImports
     , generateElmForAPI
     )
 
 -- Source
 import Lib
-import Types
+import Models
 
 
 instance ElmType User
 instance ElmType Venue
 
 spec :: Spec
-spec = Spec ["Server"]
+spec = Spec ["Http"]
             (defElmImports
              : toElmTypeSource    (Proxy :: Proxy User)
              : toElmDecoderSource (Proxy :: Proxy User)

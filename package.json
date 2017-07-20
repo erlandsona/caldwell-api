@@ -12,7 +12,7 @@
     "url": "git@github.com:erlandsona/caldwell.git"
   },
   "license": "MIT",
-  "main": "app/index.html",
+  "main": "public/index.html",
   "dependencies": {
     "fastclick": "^1.0.6",
     "firebase": "4.1.2",
