@@ -1,17 +1,25 @@
 module Server exposing (..)
 
+import Date exposing (Date)
 import Json.Decode exposing (..)
+import Json.Decode.Extra exposing (date)
 import Json.Decode.Pipeline exposing (..)
-import Json.Encode
+-- import Json.Encode
 import Http
 import String
-
 
 type alias User =
     { userId : Int
     , firstName : String
     , lastName : String
     , email : String
+    }
+
+
+type alias Venue =
+    { venueId : Int
+    , date : Date
+    , location : String
     }
 
 decodeUser : Decoder User
@@ -22,18 +30,13 @@ decodeUser =
         |> required "lastName" string
         |> required "email" string
 
-type alias Gig =
-    { showId : Int
-    , location : String
-    , date : Date
-    }
 
-decodeGig : Decoder Gig
-decodeGig =
-    decode Gig
-        |> required "showId" int
+decodeVenue : Decoder Venue
+decodeVenue =
+    decode Venue
+        |> required "venueId" int
+        |> required "date" date
         |> required "location" string
-        |> required "date" decodeDate
 
 getApiUsers : Http.Request (List (User))
 getApiUsers =
@@ -58,23 +61,25 @@ getApiUsers =
             False
         }
 
-getApiShows : Http.Request (List (Gig))
+getApiShows : Http.Request (List (Venue))
 getApiShows =
     Http.request
         { method =
             "GET"
         , headers =
-            []
+            [ Http.header "Access-Control-Allow-Origin" "*"
+            , Http.header "Content-Type" "application/json"
+            ]
         , url =
-            String.join "localhost:3737/"
-                [ ""
+            String.join "/"
+                [ "http://localhost:3737"
                 , "api"
                 , "shows"
                 ]
         , body =
             Http.emptyBody
         , expect =
-            Http.expectJson (list decodeGig)
+            Http.expectJson (list decodeVenue)
         , timeout =
             Nothing
         , withCredentials =

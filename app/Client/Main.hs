@@ -20,6 +20,9 @@ import Lib
 import Types
 
 
+instance ElmType User
+instance ElmType Venue
+
 spec :: Spec
 spec = Spec ["Server"]
             (defElmImports
@@ -30,4 +33,4 @@ spec = Spec ["Server"]
              : generateElmForAPI  (Proxy :: Proxy Api))
 
 main :: IO ()
-main = specsToDir [spec] "client"
+main = specsToDir [spec] "."
