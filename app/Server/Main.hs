@@ -6,13 +6,9 @@ module Main where
 
 -- Libs
 import Control.Monad.Except
-import Control.Monad.Reader (ReaderT, runReaderT)
-import Control.Monad.Reader.Class
+import Control.Monad.Reader (runReaderT)
 import Database.Persist.Sql
 import Database.Persist.Postgresql (runSqlPool)
-import Data.Aeson
-import Data.Aeson.TH
-import Data.Time
 import Network.Wai
 import Network.Wai.Handler.Warp (run)
 import Network.Wai.Middleware.Cors
@@ -41,7 +37,7 @@ import Models
 
 app :: Config -> Application
 app cfg = corsWithContentType $
-    serve (Proxy :: Proxy Api) $ (appToServer cfg)
+    serve (Proxy :: Proxy Api) $ (appToServer cfg :<|> files)
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)
@@ -53,14 +49,14 @@ app cfg = corsWithContentType $
                     ]
                 }
 
-appToServer :: Config -> Server Api
+appToServer :: Config -> Server Endpoints
 appToServer cfg = enter (convertApp cfg) server
 
 convertApp :: Config -> App :~> ExceptT ServantErr IO
 convertApp cfg = Nat (flip runReaderT cfg . runApp)
 
-server :: ServerT Api App
-server = (allUsers :<|> allVenues) :<|> files
+server :: ServerT Endpoints App
+server = allUsers :<|> allVenues
 
 allUsers :: App [Entity User]
 allUsers = runDb (selectList [] [])
@@ -70,12 +66,6 @@ allVenues = runDb (selectList [] [])
 
 files :: Application
 files = serveDirectory "assets"
-
-
-
-
-
-
 
 
 

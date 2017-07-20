@@ -68,7 +68,7 @@ setLogger Production = logStdout
 -- deployment application.
 makePool :: Environment -> IO ConnectionPool
 makePool Test =
-    runNoLoggingT (createPostgresqlPool (connStr "test") (envPool Test))
+    runNoLoggingT (createPostgresqlPool (connStr "_test") (envPool Test))
 makePool Development =
     runStdoutLoggingT (createPostgresqlPool (connStr "") (envPool Development))
 makePool Production = do
@@ -112,4 +112,4 @@ envPool Production = 8
 -- | A basic 'ConnectionString' for local/test development. Pass in either
 -- @""@ for 'Development' or @"test"@ for 'Test'.
 connStr :: BS.ByteString -> ConnectionString
-connStr sfx = "host=localhost dbname=perservant" <> sfx <> " user=test password=test port=5432"
+connStr sfx = "host=localhost dbname=caldwell" <> sfx <> " user=erlandsona port=5432"
