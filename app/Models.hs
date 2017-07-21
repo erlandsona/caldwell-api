@@ -1,19 +1,13 @@
-{-# LANGUAGE DeriveGeneric              #-}
-{-# LANGUAGE EmptyDataDecls             #-}
-{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
-{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE QuasiQuotes                #-}
-{-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
 module Models where
 
-import Control.Monad.Reader
 import Data.Time (UTCTime)
 import Database.Persist.Sql
 import Database.Persist.TH
@@ -23,10 +17,6 @@ import Database.Persist.TH
     , share
     , sqlSettings
     )
-
-
-import Server.Config (Config(..))
-
 
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
@@ -41,8 +31,3 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
         location String
         deriving Show
 |]
-
-runDb :: (MonadReader Config m, MonadIO m) => SqlPersistT IO b -> m b
-runDb query = do
-    pool <- asks getPool
-    liftIO $ runSqlPool query pool

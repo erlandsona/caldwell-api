@@ -1,8 +1,8 @@
-name:                caldwell-servant
+name:                caldwell-api
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            https://github.com/erlandsona/caldwell-servant#readme
+homepage:            https://github.com/erlandsona/caldwell-api#readme
 license:             MIT
 license-file:        LICENSE
 author:              Austin Erlandson
@@ -13,29 +13,51 @@ build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
 
-executable caldwell-servant
+library
   hs-source-dirs:      app
-  main-is:             Server/Main.hs
-  other-modules:       Server.Config
-                     , Lib
+  exposed-modules:     Lib
                      , Models
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
+  ghc-options:       -Wall -Werror
   build-depends:       base >= 4.7 && < 5
-                     -- Source
-                     -- , caldwell-servant
-                     -- 3rd Party
                      , aeson
                      , bytestring
-                     , elm-export
+                     -- , elm-export
                      , monad-logger
                      , mtl
                      , persistent
                      , persistent-postgresql
                      , persistent-template
-                     , safe
-                     , servant-elm
+                     -- , servant-elm
                      , servant-server
                      , time
+                     , transformers
+                     , wai
+                     , wai-cors
+                     , wai-extra
+                     -- , warp
+  default-language:    Haskell2010
+
+executable caldwell-api
+  hs-source-dirs:      app/Server
+  main-is:             Main.hs
+  other-modules:       Configuration
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
+  build-depends:       base >= 4.7 && < 5
+                     -- Source
+                     , caldwell-api
+                     -- 3rd Party
+                     -- , aeson
+                     , bytestring
+                     -- , elm-export
+                     , monad-logger
+                     , mtl
+                     , persistent
+                     , persistent-postgresql
+                     -- , persistent-template
+                     , safe
+                     -- , servant-elm
+                     , servant-server
+                     -- , time
                      , transformers
                      , wai
                      , wai-cors
@@ -43,15 +65,15 @@ executable caldwell-servant
                      , warp
   default-language:    Haskell2010
 
-test-suite caldwell-servant-test
+test-suite caldwell-api-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
-                     , caldwell-servant
+                     , caldwell-api
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
 source-repository head
   type:     git
-  location: https://github.com/erlandsona/caldwell-servant
+  location: https://github.com/erlandsona/caldwell-api

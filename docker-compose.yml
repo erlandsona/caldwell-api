@@ -2,10 +2,10 @@ version: '3'
 
 services:
 
-  caldwell-servant:
+  caldwell-api:
     build: .
-    image: caldwell-servant
-    command: caldwell-servant
+    image: caldwell-api
+    command: caldwell-api
     expose:
       - "1234"
     volumes:
@@ -17,4 +17,4 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - caldwell-servant
+      - caldwell-api

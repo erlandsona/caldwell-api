@@ -21,13 +21,7 @@ import System.Environment (lookupEnv)
 import Safe (readMay)
 
 -- Source
-import Server.Config
-     ( App(..)
-     , Config(..)
-     , Environment(..)
-     , makePool
-     , setLogger
-     )
+import Configuration
 import Lib
 import Models
 
@@ -35,7 +29,7 @@ import Models
 
 
 
-app :: Config -> Application
+app :: Settings -> Application
 app cfg = corsWithContentType $
     serve (Proxy :: Proxy Api) $ (appToServer cfg :<|> files)
     where
@@ -49,10 +43,10 @@ app cfg = corsWithContentType $
                     ]
                 }
 
-appToServer :: Config -> Server Endpoints
+appToServer :: Settings -> Server Endpoints
 appToServer cfg = enter (convertApp cfg) server
 
-convertApp :: Config -> App :~> ExceptT ServantErr IO
+convertApp :: Settings -> App :~> ExceptT ServantErr IO
 convertApp cfg = Nat (flip runReaderT cfg . runApp)
 
 server :: ServerT Endpoints App
@@ -65,7 +59,7 @@ allVenues :: App [Entity Venue]
 allVenues = runDb (selectList [] [])
 
 files :: Application
-files = serveDirectory "assets"
+files = serveDirectory "public"
 
 
 
@@ -74,7 +68,7 @@ main = do
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 3737
     pool <- makePool env
-    let cfg = Config { getPool = pool, getEnv = env }
+    let cfg = Settings { getPool = pool, getEnv = env }
         logger = setLogger env
     runSqlPool doMigrations pool
     run port $ logger $ app cfg

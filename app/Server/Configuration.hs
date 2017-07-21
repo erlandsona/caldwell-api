@@ -1,19 +1,28 @@
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings          #-}
 
-module Server.Config where
+module Configuration where
 
 import Control.Exception (throwIO)
 import Control.Monad.Except (ExceptT, MonadError)
 import Control.Monad.Logger (runNoLoggingT, runStdoutLoggingT)
-import Control.Monad.Reader (MonadIO, MonadReader, ReaderT)
+import Control.Monad.Reader
+    ( MonadIO
+    , MonadReader
+    , ReaderT
+    , asks
+    , liftIO
+    )
 import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
 import qualified Data.ByteString.Char8 as BS
 import Data.Monoid ((<>))
 import Database.Persist.Postgresql
     ( ConnectionPool
     , ConnectionString
+    , SqlPersistT
     , createPostgresqlPool
+    , runSqlPool
     )
 import Network.Wai (Middleware)
 import Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
@@ -29,20 +38,20 @@ import System.Environment (lookupEnv)
 -- monad stack without having to modify code that uses the current layout.
 newtype App a
     = App
-    { runApp :: ReaderT Config (ExceptT ServantErr IO) a
+    { runApp :: ReaderT Settings (ExceptT ServantErr IO) a
     } deriving
         ( Functor
         , Applicative
         , Monad
-        , MonadReader Config
+        , MonadReader Settings
         , MonadError ServantErr
         , MonadIO
         )
 
--- | The Config for our application is (for now) the 'Environment' we're
+-- | The Settings for our application is (for now) the 'Environment' we're
 -- running in and a Persistent 'ConnectionPool'.
-data Config
-    = Config
+data Settings
+    = Settings
     { getPool :: ConnectionPool
     , getEnv  :: Environment
     }
@@ -113,3 +122,8 @@ envPool Production = 8
 -- @""@ for 'Development' or @"test"@ for 'Test'.
 connStr :: BS.ByteString -> ConnectionString
 connStr sfx = "host=localhost dbname=caldwell" <> sfx <> " user=erlandsona port=5432"
+
+runDb :: (MonadReader Settings m, MonadIO m) => SqlPersistT IO b -> m b
+runDb query = do
+    pool <- asks getPool
+    liftIO $ runSqlPool query pool
