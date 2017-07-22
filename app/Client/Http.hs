@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Client.Http where
 
@@ -8,30 +9,35 @@ import Elm
     , toElmDecoderSource
     , toElmTypeSource
     )
--- import Servant.API  ((:>), Capture, Get, JSON)
-import Servant.Elm
-    ( ElmType
-    , Proxy (Proxy)
-    , defElmImports
-    , generateElmForAPI
-    )
+import Database.Persist.Postgresql (Entity(..))
+-- import Servant.Elm
+--     ( ElmType
+--     , Proxy (Proxy)
+--     , defElmImports
+--     , generateElmForAPI
+--     )
 
 -- Source
 import Lib
 import Models
 
 
-instance ElmType User
-instance ElmType Venue
+mkSpecBody :: ElmType a => a -> [Text]
+mkSpecBody a =
+  [ toElmTypeSource    a
+  , toElmDecoderSource a
+  , toElmEncoderSource a
+  ]
+
 
 spec :: Spec
 spec = Spec ["Http"]
             (defElmImports
-             : toElmTypeSource    (Proxy :: Proxy User)
-             : toElmDecoderSource (Proxy :: Proxy User)
-             : toElmTypeSource    (Proxy :: Proxy Venue)
-             : toElmDecoderSource (Proxy :: Proxy Venue)
-             : generateElmForAPI  (Proxy :: Proxy Api))
+             : toElmTypeSource    (Proxy :: Proxy (Entity User))
+             : toElmDecoderSource (Proxy :: Proxy (Entity User))
+             : toElmTypeSource    (Proxy :: Proxy (Entity Venue))
+             : toElmDecoderSource (Proxy :: Proxy (Entity Venue))
+             : generateElmForAPI  (Proxy :: Proxy Endpoints))
 
 main :: IO ()
 main = specsToDir [spec] "."

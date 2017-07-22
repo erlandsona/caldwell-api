@@ -17,11 +17,12 @@ library
   hs-source-dirs:      app
   exposed-modules:     Lib
                      , Models
-  ghc-options:       -Wall -Werror
+  ghc-options:       -Wall -Werror -ddump-deriv
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , bytestring
-                     -- , elm-export
+                     , elm-export
+                     , elm-export-persistent
                      , monad-logger
                      , mtl
                      , persistent
@@ -29,6 +30,7 @@ library
                      , persistent-template
                      -- , servant-elm
                      , servant-server
+                     , text
                      , time
                      , transformers
                      , wai
@@ -48,7 +50,6 @@ executable caldwell-api
                      -- 3rd Party
                      -- , aeson
                      , bytestring
-                     -- , elm-export
                      , monad-logger
                      , mtl
                      , persistent

@@ -6,7 +6,7 @@ module Lib where
 
 
 -- Libs
-import Database.Persist.Postgresql (Entity(..))
+-- import Database.Persist.Postgresql (Entity(..))
 import Servant
 
 -- Source
@@ -18,7 +18,7 @@ type Api
 
 type Endpoints
     = "api" :>
-    (    "users" :> Get '[JSON] [Entity User]
-    :<|> "shows" :> Get '[JSON] [Entity Venue]
+    (    "users" :> Get '[JSON] [User]
+    :<|> "shows" :> Get '[JSON] [Venue]
     )
 
