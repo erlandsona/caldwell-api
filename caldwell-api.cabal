@@ -9,9 +9,14 @@ author:              Austin Erlandson
 maintainer:          austin@erlandson.com
 copyright:           2017 Austin Erlandson
 category:            Web
-build-type:          Simple
+build-type:          Custom
 extra-source-files:  README.md
 cabal-version:       >=1.10
+
+custom-setup
+    setup-depends:    base >= 3.7 && < 5
+                    , Cabal
+                    , process
 
 library
   hs-source-dirs:      app
@@ -28,7 +33,7 @@ library
                      , persistent
                      , persistent-postgresql
                      , persistent-template
-                     -- , servant-elm
+                     , servant-elm
                      , servant-server
                      , text
                      , time
@@ -39,10 +44,12 @@ library
                      -- , warp
   default-language:    Haskell2010
 
-executable caldwell-api
-  hs-source-dirs:      app/Server
-  main-is:             Main.hs
-  other-modules:       Configuration
+executable caldwell-api-exe
+  hs-source-dirs:      app
+  main-is:             Server/Main.hs
+  other-modules:       Lib
+                     , Models
+                     , Server.Configuration
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
   build-depends:       base >= 4.7 && < 5
                      -- Source
@@ -50,15 +57,17 @@ executable caldwell-api
                      -- 3rd Party
                      -- , aeson
                      , bytestring
+                     , elm-export
+                     , elm-export-persistent
                      , monad-logger
                      , mtl
                      , persistent
                      , persistent-postgresql
-                     -- , persistent-template
+                     , persistent-template
                      , safe
-                     -- , servant-elm
                      , servant-server
-                     -- , time
+                     , text
+                     , time
                      , transformers
                      , wai
                      , wai-cors
@@ -66,7 +75,27 @@ executable caldwell-api
                      , warp
   default-language:    Haskell2010
 
-test-suite caldwell-api-test
+executable caldwell-elm
+  hs-source-dirs:      app
+  main-is:             Generators/Main.hs
+  other-modules:       Lib
+                     , Models
+                     , Generators.Elm
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall -Werror  
+  build-depends:       base >= 4.7 && < 5
+                     , caldwell-api
+                     , elm-export
+                     , elm-export-persistent
+                     , persistent
+                     , persistent-postgresql
+                     , persistent-template
+                     , servant-elm
+                     , servant-server
+                     , text
+                     , time
+  default-language:    Haskell2010
+
+test-suite caldwell-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
   main-is:             Spec.hs

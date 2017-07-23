@@ -2,7 +2,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings          #-}
 
-module Configuration where
+module Server.Configuration where
 
 import Control.Exception (throwIO)
 import Control.Monad.Except (ExceptT, MonadError)

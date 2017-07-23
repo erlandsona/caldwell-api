@@ -15,7 +15,6 @@
   "main": "public/index.html",
   "dependencies": {
     "fastclick": "^1.0.6",
-    "firebase": "4.1.2",
     "font-awesome": "^4.6.3",
     "smoothscroll-polyfill": "^0.3.4"
   },

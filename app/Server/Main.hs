@@ -21,9 +21,9 @@ import System.Environment (lookupEnv)
 import Safe (readMay)
 
 -- Source
-import Configuration
 import Lib
 import Models
+import Server.Configuration
 
 
 
