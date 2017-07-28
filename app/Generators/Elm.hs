@@ -6,7 +6,7 @@ module Generators.Elm where
 
 -- Libs
 import Data.Proxy
-import Data.Text
+import Data.Text as T
 import Database.Persist.Postgresql (Entity(..))
 import Elm
 import Servant.Elm
@@ -19,17 +19,19 @@ import Lib
 import Models
 
 spec :: Spec
-spec = Spec ["Generated"]
-            ( defElmImports
-            : toElmTypeSource (Proxy :: Proxy (Entity User))
-            : toElmDecoderSource (Proxy :: Proxy (Entity User))
-            : toElmEncoderSource (Proxy :: Proxy (Entity User))
-            : generateElmForAPI (Proxy :: Proxy Endpoints)
-            )
+spec = Spec ["Generated"] elmText
 
 
-mkElmSource :: ElmType a => a -> [Text]
-mkElmSource a =
+elmText :: [Text]
+elmText =
+    ( defElmImports
+    : mkElmTypeEnDecoders (Proxy :: Proxy (Entity User))
+    : generateElmForAPI (Proxy :: Proxy Endpoints)
+    )
+
+
+mkElmTypeEnDecoders :: ElmType a => a -> Text
+mkElmTypeEnDecoders a = T.unlines
     [ toElmTypeSource a
     , toElmDecoderSource a
     , toElmEncoderSource a

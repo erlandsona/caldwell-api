@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module Main where
+module Server.Main where
 
 -- Libs
 import Control.Monad.Except

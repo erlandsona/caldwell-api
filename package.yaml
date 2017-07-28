@@ -1,0 +1,127 @@
+name: caldwell-api
+version: '0.1.0.0'
+category: Web
+author: Austin Erlandson
+maintainer: austin@erlandson.com
+copyright: 2017 Austin Erlandson
+license: MIT
+github: erlandsona/caldwell-api
+extra-source-files:
+- README.md
+
+dependencies:
+- base >=4.7 && <5
+- aeson
+- bytestring
+- elm-export
+- elm-export-persistent
+- monad-logger
+- mtl
+- persistent
+- persistent-postgresql
+- persistent-template
+- servant-elm
+- servant-server
+- text
+- time
+- transformers
+- wai
+- wai-cors
+- wai-extra
+
+library:
+  source-dirs: app
+  ghc-options:
+  - -Wall
+  - -Werror
+  - -ddump-deriv
+  exposed-modules:
+  - Lib
+  - Models
+  dependencies:
+  - base >=4.7 && <5
+  - aeson
+  - bytestring
+  - elm-export
+  - elm-export-persistent
+  - monad-logger
+  - mtl
+  - persistent
+  - persistent-postgresql
+  - persistent-template
+  - safe
+  - servant-elm
+  - servant-server
+  - text
+  - time
+  - transformers
+  - wai
+  - wai-cors
+  - wai-extra
+  - warp
+
+executables:
+  caldwell-api-exe:
+    main: Server/Main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    - -Werror
+    dependencies:
+    - base >=4.7 && <5
+    - caldwell-api
+    - bytestring
+    - elm-export
+    - elm-export-persistent
+    - monad-logger
+    - mtl
+    - persistent
+    - persistent-postgresql
+    - persistent-template
+    - safe
+    - servant-server
+    - text
+    - time
+    - transformers
+    - wai
+    - wai-cors
+    - wai-extra
+    - warp
+
+  caldwell-elm:
+    main: Generators/Main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    - -Werror
+    dependencies:
+    - base >=4.7 && <5
+    - caldwell-api
+    - elm-export
+    - elm-export-persistent
+    - persistent
+    - persistent-postgresql
+    - persistent-template
+    - process
+    - servant-elm
+    - servant-server
+    - text
+    - time
+
+tests:
+  caldwell-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - caldwell-api
