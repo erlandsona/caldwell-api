@@ -9,34 +9,16 @@ github: erlandsona/caldwell-api
 extra-source-files:
 - README.md
 
-dependencies:
-- base >=4.7 && <5
-- aeson
-- bytestring
-- elm-export
-- elm-export-persistent
-- monad-logger
-- mtl
-- persistent
-- persistent-postgresql
-- persistent-template
-- servant-elm
-- servant-server
-- text
-- time
-- transformers
-- wai
-- wai-cors
-- wai-extra
-
 library:
-  source-dirs: app
+  source-dirs: app/Shared
   ghc-options:
   - -Wall
   - -Werror
   - -ddump-deriv
+  - -ddump-splices
+  - -fno-warn-orphans
   exposed-modules:
-  - Lib
+  - Apis
   - Models
   dependencies:
   - base >=4.7 && <5
@@ -61,9 +43,9 @@ library:
   - warp
 
 executables:
-  caldwell-api-exe:
-    main: Server/Main.hs
-    source-dirs: app
+  caldwell-api:
+    main: Main.hs
+    source-dirs: app/Server
     ghc-options:
     - -threaded
     - -rtsopts
@@ -90,29 +72,6 @@ executables:
     - wai-cors
     - wai-extra
     - warp
-
-  caldwell-elm:
-    main: Generators/Main.hs
-    source-dirs: app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    - -Wall
-    - -Werror
-    dependencies:
-    - base >=4.7 && <5
-    - caldwell-api
-    - elm-export
-    - elm-export-persistent
-    - persistent
-    - persistent-postgresql
-    - persistent-template
-    - process
-    - servant-elm
-    - servant-server
-    - text
-    - time
 
 tests:
   caldwell-test:

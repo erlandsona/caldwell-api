@@ -24,28 +24,10 @@ source-repository head
 
 library
   hs-source-dirs:
-      app
-  ghc-options: -Wall -Werror -ddump-deriv
+      app/Shared
+  ghc-options: -Wall -Werror -ddump-deriv -ddump-splices -fno-warn-orphans
   build-depends:
       base >=4.7 && <5
-    , aeson
-    , bytestring
-    , elm-export
-    , elm-export-persistent
-    , monad-logger
-    , mtl
-    , persistent
-    , persistent-postgresql
-    , persistent-template
-    , servant-elm
-    , servant-server
-    , text
-    , time
-    , transformers
-    , wai
-    , wai-cors
-    , wai-extra
-    , base >=4.7 && <5
     , aeson
     , bytestring
     , elm-export
@@ -66,41 +48,19 @@ library
     , wai-extra
     , warp
   exposed-modules:
-      Lib
+      Apis
       Models
   other-modules:
-      Generators.Elm
-      Generators.Main
-      Server.Configuration
-      Server.Main
       Paths_caldwell_api
   default-language: Haskell2010
 
-executable caldwell-api-exe
-  main-is: Server/Main.hs
+executable caldwell-api
+  main-is: Main.hs
   hs-source-dirs:
-      app
+      app/Server
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
   build-depends:
       base >=4.7 && <5
-    , aeson
-    , bytestring
-    , elm-export
-    , elm-export-persistent
-    , monad-logger
-    , mtl
-    , persistent
-    , persistent-postgresql
-    , persistent-template
-    , servant-elm
-    , servant-server
-    , text
-    , time
-    , transformers
-    , wai
-    , wai-cors
-    , wai-extra
-    , base >=4.7 && <5
     , caldwell-api
     , bytestring
     , elm-export
@@ -120,38 +80,16 @@ executable caldwell-api-exe
     , wai-extra
     , warp
   other-modules:
-      Generators.Elm
-      Generators.Main
-      Lib
-      Models
-      Server.Configuration
+      Configuration
   default-language: Haskell2010
 
 executable caldwell-elm
-  main-is: Generators/Main.hs
+  main-is: Main.hs
   hs-source-dirs:
-      app
+      app/Generators
   ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
   build-depends:
       base >=4.7 && <5
-    , aeson
-    , bytestring
-    , elm-export
-    , elm-export-persistent
-    , monad-logger
-    , mtl
-    , persistent
-    , persistent-postgresql
-    , persistent-template
-    , servant-elm
-    , servant-server
-    , text
-    , time
-    , transformers
-    , wai
-    , wai-cors
-    , wai-extra
-    , base >=4.7 && <5
     , caldwell-api
     , elm-export
     , elm-export-persistent
@@ -164,11 +102,7 @@ executable caldwell-elm
     , text
     , time
   other-modules:
-      Generators.Elm
-      Lib
-      Models
-      Server.Configuration
-      Server.Main
+      Elm
   default-language: Haskell2010
 
 test-suite caldwell-test
@@ -178,24 +112,6 @@ test-suite caldwell-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , aeson
-    , bytestring
-    , elm-export
-    , elm-export-persistent
-    , monad-logger
-    , mtl
-    , persistent
-    , persistent-postgresql
-    , persistent-template
-    , servant-elm
-    , servant-server
-    , text
-    , time
-    , transformers
-    , wai
-    , wai-cors
-    , wai-extra
-    , base
+      base
     , caldwell-api
   default-language: Haskell2010

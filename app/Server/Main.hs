@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module Server.Main where
+module Main where
 
 -- Libs
 import Control.Monad.Except
@@ -21,9 +21,9 @@ import System.Environment (lookupEnv)
 import Safe (readMay)
 
 -- Source
-import Lib
+import Apis
 import Models
-import Server.Configuration
+import Configuration
 
 
 
@@ -31,7 +31,7 @@ import Server.Configuration
 
 app :: Settings -> Application
 app cfg = corsWithContentType $
-    serve (Proxy :: Proxy Api) $ (appToServer cfg :<|> files)
+    serve (Proxy :: Proxy Root) $ (appToServer cfg :<|> files)
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)

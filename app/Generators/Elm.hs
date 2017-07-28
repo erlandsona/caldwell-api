@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings   #-}
 
 
-module Generators.Elm where
+module Elm where
 
 -- Libs
 import Data.Proxy
@@ -15,8 +15,19 @@ import Servant.Elm
     )
 
 -- Source
-import Lib
+import Apis
 import Models
+
+main :: IO ()
+main = do
+    -- elmFormat <- createProcess (proc "elm-format" ["--yes", "--stdin"])
+    --     { std_in = CreatePipe
+    --     , std_out = CreatePipe
+    --     }
+    -- let formattedSpec = elmFormat $ T.unlines elmText
+    specsToDir [spec] "app/Client"
+
+
 
 spec :: Spec
 spec = Spec ["Generated"] elmText
@@ -26,12 +37,13 @@ elmText :: [Text]
 elmText =
     ( defElmImports
     : mkElmTypeEnDecoders (Proxy :: Proxy (Entity User))
+    : mkElmTypeEnDecoders (Proxy :: Proxy (Entity Venue))
     : generateElmForAPI (Proxy :: Proxy Endpoints)
     )
 
 
 mkElmTypeEnDecoders :: ElmType a => a -> Text
-mkElmTypeEnDecoders a = T.unlines
+mkElmTypeEnDecoders a = T.intercalate "\n\n\n"
     [ toElmTypeSource a
     , toElmDecoderSource a
     , toElmEncoderSource a
