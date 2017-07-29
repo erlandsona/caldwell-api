@@ -78,15 +78,15 @@ caldwellCalendar_ venues =
 
 
 venueToElmHtml : Venue -> Html a
-venueToElmHtml { date, location } =
+venueToElmHtml { venueDate, venueLocation } =
     li [ class [ Gig ] ] <|
         List.map
             (\string ->
                 span [] [ text string ]
             )
-            [ dayStringer date
-            , location
-            , format C_en_us.config "%l:%M%P" date
+            [ dayStringer venueDate
+            , venueLocation
+            , format C_en_us.config "%l:%M%P" venueDate
             ]
 
 

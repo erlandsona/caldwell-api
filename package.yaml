@@ -22,25 +22,15 @@ library:
   - Models
   dependencies:
   - base >=4.7 && <5
-  - aeson
-  - bytestring
   - elm-export
   - elm-export-persistent
-  - monad-logger
-  - mtl
   - persistent
   - persistent-postgresql
   - persistent-template
-  - safe
-  - servant-elm
+  - servant-generic
   - servant-server
   - text
   - time
-  - transformers
-  - wai
-  - wai-cors
-  - wai-extra
-  - warp
 
 executables:
   caldwell-api:
@@ -54,19 +44,15 @@ executables:
     - -Werror
     dependencies:
     - base >=4.7 && <5
-    - caldwell-api
     - bytestring
-    - elm-export
-    - elm-export-persistent
+    - caldwell-api
     - monad-logger
     - mtl
     - persistent
     - persistent-postgresql
-    - persistent-template
     - safe
+    - servant-generic
     - servant-server
-    - text
-    - time
     - transformers
     - wai
     - wai-cors

@@ -17,9 +17,6 @@ live: #Development# Run both frontend/backend and rebuild/rerun when files chang
 
 live-frontend:
 	yarn start | grep -v --line-buffered "./~/"
-	# The grep filters out a lot of excessive webpack-dev-server compression output
-	# Seems to work better now, but we're still missing index.js handling
-	# elm-live app/Client/App.elm --output=public/app.js --port=3030 --dir=public
 
 live-backend:
 	find . | grep 'app/.*\.hs' | entr -r make run
@@ -66,9 +63,11 @@ be: build
 # 	stack build --pedantic --file-watch-poll --fast --ghc-options -ddump-splices
 
 run: #Tools# Build & export server types to Elm
-	# @TODO don't export if the file is unchanged, so we don't trigger Elm rebuilds needlessly
-	stack runghc app/Generators/Elm.hs && elm-format app/Client/Generated.elm --yes
 	stack build
+	stack runghc app/Generators/ElmCode.hs --package caldwell-api
+	elm-format app/Client/Server.elm --yes
+	stack exec caldwell-api
+	# @TODO don't export if the file is unchanged, so we don't trigger Elm rebuilds needlessly
 
 # precommit: #Tools# Install git pre-commit hook to ensure build is green
 # 	echo "set -e; make build; make test" > .git/hooks/pre-commit

@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings   #-}
 
 
-module Elm where
+module ElmCode where
 
 -- Libs
 import Data.Proxy
@@ -10,8 +10,10 @@ import Data.Text as T
 import Database.Persist.Postgresql (Entity(..))
 import Elm
 import Servant.Elm
-    ( defElmImports
-    , generateElmForAPI
+    ( ElmOptions(..)
+    , UrlPrefix(Static)
+    , defElmOptions
+    , generateElmForAPIWith
     )
 
 -- Source
@@ -30,7 +32,7 @@ main = do
 
 
 spec :: Spec
-spec = Spec ["Generated"] elmText
+spec = Spec ["Server"] elmText
 
 
 elmText :: [Text]
@@ -38,7 +40,7 @@ elmText =
     ( defElmImports
     : mkElmTypeEnDecoders (Proxy :: Proxy (Entity User))
     : mkElmTypeEnDecoders (Proxy :: Proxy (Entity Venue))
-    : generateElmForAPI (Proxy :: Proxy Endpoints)
+    : generateElmForAPIWith options (Proxy :: Proxy Endpoints)
     )
 
 
@@ -47,4 +49,21 @@ mkElmTypeEnDecoders a = T.intercalate "\n\n\n"
     [ toElmTypeSource a
     , toElmDecoderSource a
     , toElmEncoderSource a
+    ]
+
+
+options :: ElmOptions
+options = defElmOptions
+    { urlPrefix = Static "http://localhost:3737" }
+
+defElmImports :: Text
+defElmImports =
+  T.unlines
+    [ "import Date exposing (Date(..))"
+    , "import Exts.Json.Decode exposing (decodeDate)"
+    , "import Http"
+    , "import Json.Decode exposing (..)"
+    , "import Json.Decode.Pipeline exposing (..)"
+    , "import Json.Encode"
+    , "import String"
     ]

@@ -11,7 +11,6 @@
 
 module Models where
 
--- import Data.Aeson
 import Data.Text
 import Data.Time (UTCTime)
 import Database.Persist.Sql

@@ -4,7 +4,7 @@ module Nav.Styles exposing (css)
 
 import Css exposing (..)
 import Css.Elements exposing (..)
-import CssHelpers exposing (prop)
+import Lib.CssHelpers exposing (prop)
 
 
 -- Source
@@ -27,7 +27,7 @@ css =
         , margin2 (vh 25) zero
         , backgroundColor transparent
         , prop "-ms-transform" "translateX(110%)"
-        , prop "transform" <| "translate3d(calc(100% + "++gutterSize.value++"), 0, 0)"
+        , prop "transform" <| "translate3d(calc(100% + " ++ gutterSize.value ++ "), 0, 0)"
         , zIndex (int 1)
         , children
             [ a
@@ -81,5 +81,7 @@ css =
         ]
     ]
 
+
 dotSize : Float
-dotSize = 13
+dotSize =
+    13

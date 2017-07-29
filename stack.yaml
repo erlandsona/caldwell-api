@@ -24,13 +24,14 @@ packages:
     git: https://github.com/supermario/elm-export-persistent.git
     commit: dea9e3af87bba51c0adf8c0e4b0da38f50dce4a8
   extra-dep: true
-- location:
-    git: https://github.com/erlandsona/servant-elm.git
-    commit: 4e27dcc8c135a3c2ced3f6d2de74133532dcd743
-  extra-dep: true
+# - location:
+#     git: https://github.com/erlandsona/servant-elm.git
+#     commit: 4e27dcc8c135a3c2ced3f6d2de74133532dcd743
+#   extra-dep: true
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
-extra-deps: []
+extra-deps:
+- servant-generic-0.1.0.0
 
 # Override default flag values for local packages and extra-deps
 flags: {}

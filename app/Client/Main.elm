@@ -4,14 +4,23 @@ module Site exposing (main)
 
 import Debug
 import Date exposing (Date)
+
+
 -- import Date.Extra.Duration exposing (add, Duration(..))
+
 import Date.Extra.Compare exposing (is, Compare2(..))
 import Http
 import Html exposing (Html, Attribute, header, node, span, text)
 import Html.Events exposing (onClick)
+
+
 -- import Json.Decode.Pipeline exposing (decode, required)
+
 import Json.Decode exposing (decodeValue, int, keyValuePairs, maybe, string)
+
+
 -- import Json.Decode.Extra exposing (date)
+
 import Json.Encode exposing (Value)
 import Maybe exposing (withDefault)
 import Navigation as Nav exposing (programWithFlags, Location)
@@ -54,7 +63,7 @@ showsDecoder : Date -> Maybe Value -> List Venue
 showsDecoder today json =
     let
         noShowsVenue =
-            Venue (-1) today "No Shows Scheduled"
+            Venue (Just -1) today "No Shows Scheduled"
 
         decodedVenues json =
             let
@@ -88,18 +97,19 @@ init { shows, now } location =
         model =
             { history = [ parse location ]
             , nav = Closed
-            , shows = venues
-                |> List.filter (.date >> is SameOrBefore today)
-                |> List.sortBy (Date.toTime << .date)
+            , shows =
+                venues
+                    |> List.filter (.venueDate >> is SameOrBefore today)
+                    |> List.sortBy (Date.toTime << .venueDate)
             }
     in
-        model !
-            [ location
-                |> parse
-                |> toString
-                |> snapIntoView
-            , Http.send ShowResponse getApiShows
-            ]
+        model
+            ! [ location
+                    |> parse
+                    |> toString
+                    |> snapIntoView
+              , Http.send ShowResponse getApiShows
+              ]
 
 
 parse : Location -> Page
@@ -159,14 +169,15 @@ update msg model =
 
         ShowResponse results ->
             let
-                _ = Debug.log <| toString results
-
+                _ =
+                    Debug.log <| toString results
             in
                 case results of
                     Ok shows ->
                         ( { model | shows = shows }, Cmd.none )
+
                     Err msg ->
-                        (model, Cmd.none)
+                        ( model, Cmd.none )
 
 
 main : Program Initializer Model Msg

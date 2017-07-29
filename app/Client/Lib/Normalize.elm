@@ -1,4 +1,4 @@
-module Normalize exposing (css, snippets)
+module Lib.Normalize exposing (css, snippets)
 
 -- Copy Pasta from https://github.com/scottcorgan/elm-css-reset/blob/1.0.2/src/Css/Reset.elm#L96
 -- until the version of elm-css get's updated
@@ -6,7 +6,7 @@ module Normalize exposing (css, snippets)
 
 import Css exposing (..)
 import Css.Elements as Elem exposing (..)
-import CssHelpers exposing (prop)
+import Lib.CssHelpers exposing (prop)
 import String.Extra exposing (clean)
 
 
