@@ -11,7 +11,7 @@ import String.Extra exposing (clean)
 -- Source
 
 import Constants exposing (..)
-import CssHelpers exposing (prop)
+import Lib.CssHelpers exposing (prop)
 import Model exposing (Model)
 import Main.Styles as Main
 import Nav.Styles as Nav
@@ -35,12 +35,12 @@ css =
                     , fontSize (pct 93)
                     , fontWeight (int 300)
                     ]
-              , h1 [ fontSize (pct 250) , fontWeight inherit ]
-              , h2 [ fontSize (pct 240) , fontWeight inherit ]
-              , h3 [ fontSize (pct 225) , fontWeight inherit ]
-              , h4 [ fontSize (pct 200) , fontWeight inherit ]
-              , h5 [ fontSize (pct 175) , fontWeight inherit ]
-              , h6 [ fontSize (pct 150) , fontWeight inherit ]
+              , h1 [ fontSize (pct 250), fontWeight inherit ]
+              , h2 [ fontSize (pct 240), fontWeight inherit ]
+              , h3 [ fontSize (pct 225), fontWeight inherit ]
+              , h4 [ fontSize (pct 200), fontWeight inherit ]
+              , h5 [ fontSize (pct 175), fontWeight inherit ]
+              , h6 [ fontSize (pct 150), fontWeight inherit ]
               , p [ fontSize (pct 135) ]
               , a
                     [ textDecoration none
@@ -88,30 +88,30 @@ css =
                     ]
               ]
             , [ header
-                [ prop "user-select" "none"
-                , fontFamily cursive
-                , fontFamilies [ "Megrim" ]
-                , fontSize titleHeight
-                , cursor pointer
-                , position fixed
-                , right zero
-                -- plus padding ends up being 68px
-                -- , width (pct 100)
-                , padding4 (gutterSize |*| Css.rem 2) gutterSize zero (Css.rem 0.5)
-                , borderBottomLeftRadius (px 30)
-                , backgroundColor (rgba 0 0 0 0.93)
-                , prop "box-shadow" "0px 0px 7px black, 0px 0px 37px black, 0px 0px 57px black, 0px 0px 77px black"
-                , prop "text-shadow" "0px 0px 7px white"
-                , zIndex (int 1)
-                , lineHeight (num 1.4)
-                , children
-                    [ span
-                        [ fontFamilies [ "Monoton" ]
-                        , float left
+                    [ prop "user-select" "none"
+                    , fontFamily cursive
+                    , fontFamilies [ "Megrim" ]
+                    , fontSize titleHeight
+                    , cursor pointer
+                    , position fixed
+                    , right zero
+                      -- plus padding ends up being 68px
+                      -- , width (pct 100)
+                    , padding4 (gutterSize |*| Css.rem 2) gutterSize zero (Css.rem 0.5)
+                    , borderBottomLeftRadius (px 30)
+                    , backgroundColor (rgba 0 0 0 0.93)
+                    , prop "box-shadow" "0px 0px 7px black, 0px 0px 37px black, 0px 0px 57px black, 0px 0px 77px black"
+                    , prop "text-shadow" "0px 0px 7px white"
+                    , zIndex (int 1)
+                    , lineHeight (num 1.4)
+                    , children
+                        [ span
+                            [ fontFamilies [ "Monoton" ]
+                            , float left
+                            ]
                         ]
                     ]
-                ]
-            ]
+              ]
             , Nav.css
             , Main.css
             ]
@@ -124,36 +124,42 @@ css_ model =
 
 styles_ : Model -> { css : String, warnings : List String }
 styles_ model =
-  let
-      navState = model.nav
-      currentPage = List.head model.history
-  in
-    compile
-        [ stylesheet
-            [ nav <|
-                if navState == Open then
-                    [ transform (translate2 zero zero)
-                    , transform (translate3d zero zero zero)
+    let
+        navState =
+            model.nav
+
+        currentPage =
+            List.head model.history
+    in
+        compile
+            [ stylesheet
+                [ nav <|
+                    if navState == Open then
+                        [ transform (translate2 zero zero)
+                        , transform (translate3d zero zero zero)
+                        ]
+                    else
+                        []
+                , selector container
+                    [ children
+                        [ main_ <|
+                            if navState == Open then
+                                [ opacity (num 0.25)
+                                ]
+                            else
+                                []
+                        ]
                     ]
-                else
-                    []
-            , selector container
-                [ children
-                    [ main_ <|
-                        if navState == Open then
-                            [ opacity (num 0.25)
-                            ]
-                        else
-                            []
-                    ]
-                ]
-            , selector container
-                [ children
-                    [ selector blackOverlay <|
-                        case currentPage of
-                            Just Home -> []
-                            _ -> [ opacity (num 0.9) ]
+                , selector container
+                    [ children
+                        [ selector blackOverlay <|
+                            case currentPage of
+                                Just Home ->
+                                    []
+
+                                _ ->
+                                    [ opacity (num 0.9) ]
+                        ]
                     ]
                 ]
             ]
-        ]

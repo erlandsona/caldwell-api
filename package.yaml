@@ -1,0 +1,74 @@
+name: caldwell-api
+version: '0.1.0.0'
+category: Web
+author: Austin Erlandson
+maintainer: austin@erlandson.com
+copyright: 2017 Austin Erlandson
+license: MIT
+github: erlandsona/caldwell-api
+extra-source-files:
+- README.md
+
+library:
+  source-dirs: app/Shared
+  ghc-options:
+  - -Wall
+  - -Werror
+  - -ddump-deriv
+  - -ddump-splices
+  - -fno-warn-orphans
+  exposed-modules:
+  - Apis
+  - Models
+  dependencies:
+  - base >=4.7 && <5
+  - elm-export
+  - elm-export-persistent
+  - persistent
+  - persistent-postgresql
+  - persistent-template
+  - servant-docs
+  - servant-generic
+  - servant-server
+  - text
+  - time
+  - turtle
+
+executables:
+  caldwell-server:
+    main: Main.hs
+    source-dirs: app/Server
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    - -Werror
+    dependencies:
+    - base >=4.7 && <5
+    - bytestring
+    - caldwell-api
+    - monad-logger
+    - mtl
+    - persistent
+    - persistent-postgresql
+    - safe
+    - servant-generic
+    - servant-server
+    - transformers
+    - wai
+    - wai-cors
+    - wai-extra
+    - warp
+
+tests:
+  caldwell-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - caldwell-api

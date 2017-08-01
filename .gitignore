@@ -30,3 +30,5 @@ runner.sh
 public/
 npm-debug.log
 Session.vim
+app/Client/Generated.elm
+tags

@@ -21,9 +21,9 @@ import System.Environment (lookupEnv)
 import Safe (readMay)
 
 -- Source
-import Configuration
-import Lib
+import Apis
 import Models
+import Configuration
 
 
 
@@ -31,7 +31,7 @@ import Models
 
 app :: Settings -> Application
 app cfg = corsWithContentType $
-    serve (Proxy :: Proxy Api) $ (appToServer cfg :<|> files)
+    serve (Proxy :: Proxy Root) $ (appToServer cfg :<|> files)
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)

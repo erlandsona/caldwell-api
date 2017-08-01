@@ -1,8 +1,7 @@
 {-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module Lib where
+module Apis where
 
 
 -- Libs
@@ -12,7 +11,7 @@ import Servant
 -- Source
 import Models
 
-type Api
+type Root
     =    Endpoints
     :<|> Raw
 

@@ -4,7 +4,7 @@ module Main.Styles exposing (css)
 
 import Css exposing (..)
 import Css.Elements exposing (..)
-import CssHelpers exposing (prop)
+import Lib.CssHelpers exposing (prop)
 
 
 -- Source
@@ -22,14 +22,19 @@ css =
             [ section
                 [ minHeight (vh 100)
                 , width (pct 100)
-                , maxWidth (px 768) -- Tablet Width
+                , maxWidth (px 768)
+                  -- Tablet Width
                 , margin auto
                 , prop "-webkit-overflow-scrolling" "touch"
                 , padding4
-                    (Css.rem 7) -- Top
-                    (Css.rem <| gutterSize.numericValue * 3) -- Right
-                    zero -- Bottom
-                    gutterSize -- Left
+                    (Css.rem 7)
+                    -- Top
+                    (Css.rem <| gutterSize.numericValue * 3)
+                    -- Right
+                    zero
+                    -- Bottom
+                    gutterSize
+                  -- Left
                 ]
             , id Home
                 [ displayFlex
