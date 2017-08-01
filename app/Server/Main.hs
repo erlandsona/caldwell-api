@@ -1,3 +1,5 @@
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeOperators     #-}
@@ -17,6 +19,7 @@ import Network.Wai.Middleware.Cors
     , simpleCorsResourcePolicy
     )
 import Servant
+import Servant.Generic
 import System.Environment (lookupEnv)
 import Safe (readMay)
 
@@ -31,7 +34,7 @@ import Configuration
 
 app :: Settings -> Application
 app cfg = corsWithContentType $
-    serve (Proxy :: Proxy Root) $ (appToServer cfg :<|> files)
+    serve (Proxy :: Proxy Root) $ (appToServer cfg)
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)
@@ -43,14 +46,23 @@ app cfg = corsWithContentType $
                     ]
                 }
 
-appToServer :: Settings -> Server Endpoints
-appToServer cfg = enter (convertApp cfg) server
+appToServer :: Settings -> Server Root
+appToServer cfg = enter (convertApp cfg) baseServer
 
 convertApp :: Settings -> App :~> ExceptT ServantErr IO
 convertApp cfg = Nat (flip runReaderT cfg . runApp)
 
-server :: ServerT Endpoints App
-server = allUsers :<|> allVenues
+baseServer :: Base AsServer
+baseServer = Base
+    { root = files
+    , api  = toServant apiServer
+    }
+
+apiServer :: Api AsServer
+apiServer = Api
+    { users  = toServant allUsers
+    , venues = toServant allVenues
+    }
 
 allUsers :: App [Entity User]
 allUsers = runDb (selectList [] [])
