@@ -32,6 +32,7 @@ library:
   - servant-server
   - text
   - time
+  - turtle
 
 executables:
   caldwell-server:

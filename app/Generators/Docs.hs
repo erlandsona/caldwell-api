@@ -12,11 +12,12 @@ import Data.ByteString.Lazy (ByteString, writeFile)
 import Data.Proxy
 import Data.Text.Lazy.Encoding (encodeUtf8)
 import Data.Text.Lazy (pack)
+import Data.Time (UTCTime(..), fromGregorian, secondsToDiffTime)
 import Database.Persist (Entity(..))
 import Database.Persist.Sql (toSqlKey)
 import Prelude hiding (writeFile)
 import Servant.Docs
-import Data.Time (UTCTime(..), fromGregorian, secondsToDiffTime)
+import Turtle
 
 import Apis
 import Models
@@ -44,20 +45,9 @@ instance ToSample (Entity Venue) where
               key = toSqlKey 1 :: VenueId
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 main :: IO ()
-main = writeFile "./api-docs.md" (docsBS :: ByteString)
+main = do
+    echo "Writing: DOCS.md"
+    writeFile "DOCS.md" (docsBS :: ByteString)
 
 

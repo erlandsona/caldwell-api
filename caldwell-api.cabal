@@ -38,6 +38,7 @@ library
     , servant-server
     , text
     , time
+    , turtle
   exposed-modules:
       Apis
       Models

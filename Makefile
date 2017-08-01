@@ -65,6 +65,7 @@ be: build
 run: #Tools# Build & export server types to Elm
 	stack build
 	stack runghc app/Generators/ElmCode.hs --package caldwell-api
+	stack runghc app/Generators/Docs.hs --package caldwell-api
 	elm-format app/Client/Server.elm --yes
 	stack exec caldwell-api
 	# @TODO don't export if the file is unchanged, so we don't trigger Elm rebuilds needlessly
