@@ -27,13 +27,14 @@ library:
   - persistent
   - persistent-postgresql
   - persistent-template
+  - servant-docs
   - servant-generic
   - servant-server
   - text
   - time
 
 executables:
-  caldwell-api:
+  caldwell-server:
     main: Main.hs
     source-dirs: app/Server
     ghc-options:

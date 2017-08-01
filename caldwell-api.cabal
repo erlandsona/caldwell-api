@@ -33,6 +33,7 @@ library
     , persistent
     , persistent-postgresql
     , persistent-template
+    , servant-docs
     , servant-generic
     , servant-server
     , text
@@ -44,7 +45,7 @@ library
       Paths_caldwell_api
   default-language: Haskell2010
 
-executable caldwell-api
+executable caldwell-server
   main-is: Main.hs
   hs-source-dirs:
       app/Server
