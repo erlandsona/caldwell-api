@@ -31,6 +31,8 @@ library
     , aeson
     , elm-export
     , elm-export-persistent
+    , HandsomeSoup
+    , hxt
     , persistent
     , persistent-postgresql
     , persistent-template
