@@ -3,6 +3,7 @@
 
 module Generators.ViewParser where
 
+import Control.Monad.IO.Class
 import Text.XML.HXT.Core
 import Text.HandsomeSoup
 
@@ -15,7 +16,8 @@ main = do
     -- runX . xshow $ render rawTemplate "Data!"
     -- runX $ parsedTemplate >>> css "[data-care]" /> changeText (foldl (\_ -> return "Stuff") "")
     -- Works in a console but won't compile inside IO :shrug:
-    -- _ <- runLA (hread >>> css "[data-care]" /> changeText (foldl (\_ -> return "Stuff") "")) rawTemplate
+    stuff <- liftIO $ runX . xshow $ (parseHtml rawTemplate) >>> css "[data-care]" /> changeText (foldl (\_ -> return "Stuff") "")
+    print stuff
     return ()
 
 
