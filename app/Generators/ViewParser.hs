@@ -1,27 +1,19 @@
-{-# LANGUAGE OverloadedStrings #-}
-
-
 module Generators.ViewParser where
 
-import Control.Monad.IO.Class
-import Text.XML.HXT.Core
-import Text.HandsomeSoup
+import Text.HTML.TagSoup
+import Text.HTML.TagSoup.Match
+
 
 
 main :: IO ()
 main = do
-    rawTemplate <- readFile "app/Server/TestView/snippet.html"
+    document <- readFile "app/Server/TestView/snippet.html" 
+    print $ filter (\tag ->
+                        if isTagOpen tag
+                        then anyAttr "<li data-care>"
+                        else tag
+                    ) $ parseTags document
 
-    -- parsedTemplate <- parseHtml rawTemplate
-    -- runX . xshow $ render rawTemplate "Data!"
-    -- runX $ parsedTemplate >>> css "[data-care]" /> changeText (foldl (\_ -> return "Stuff") "")
-    -- Works in a console but won't compile inside IO :shrug:
-    stuff <- liftIO $ runX . xshow $ (parseHtml rawTemplate) >>> css "[data-care]" /> changeText (foldl (\_ -> return "Stuff") "")
-    print stuff
-    return ()
-
+    -- print $ render ast "Stuff"
 
 
-
-render template datum = 
-    (parseHtml template) >>> css "[data-bucketOfCares]" /> changeText (map (\_->datum))

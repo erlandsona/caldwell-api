@@ -26,14 +26,13 @@ library:
   - aeson
   - elm-export
   - elm-export-persistent
-  - HandsomeSoup
-  - hxt
   - persistent
   - persistent-postgresql
   - persistent-template
   - servant-docs
   - servant-generic
   - servant-server
+  - tagsoup
   - text
   - time
   - turtle
