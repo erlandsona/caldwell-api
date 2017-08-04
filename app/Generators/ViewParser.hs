@@ -1,7 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Generators.ViewParser where
 
+import Data.Text
+import qualified Data.Text.IO as IO
 import Text.HTML.TagSoup
 import Text.HTML.TagSoup.Match
 import Text.HTML.TagSoup.Tree
@@ -13,21 +16,20 @@ import Models
 
 main :: IO ()
 main = do
-    document <- readFile "app/Server/TestView/snippet.html"
+    document <- IO.readFile "app/Server/TestView/snippet.html"
 
-    print $ renderTree $ injectHaskellIntoHtmlAST (show (User "Austin" "Erlandson" "austin@erlandson.com")) $ attributes document
+    parseTree document |>
+        injectHaskellIntoHtmlAST (User "Austin" "Erlandson" "austin@erlandson.com") |>
+        renderTree |>
+        print
 
 
-attributes :: String -> [TagTree String]
-attributes document = [x | x@(TagBranch _ [("data-key", _)] _) <- universeTree $ parseTree document ]
-
-injectHaskellIntoHtmlAST :: String -> [TagTree String] -> [TagTree String]
-injectHaskellIntoHtmlAST haskell tags =
-    map (\tag@(TagBranch a b _) ->
-        case b of
-            [(c, "cares")] -> TagBranch a b [TagLeaf (TagText haskell)]
-            _ -> tag
-    ) tags
+injectHaskellIntoHtmlAST :: User -> [TagTree Text] -> [TagTree Text]
+injectHaskellIntoHtmlAST haskell = transformTree injector
+    where
+        injector (TagBranch name attrs@[("data-key", "userFirstName")] _) =
+            [TagBranch name attrs [TagLeaf (TagText $ userFirstName haskell)]]
+        injector x = [x]
 
 
 -- parseTree
@@ -188,3 +190,6 @@ injectHaskellIntoHtmlAST haskell tags =
 -- , TagClose "body", TagText "\n"
 -- , TagClose "html", TagText "\n\n"
 -- ]
+
+x |> f = f x
+infixl 0 |>
