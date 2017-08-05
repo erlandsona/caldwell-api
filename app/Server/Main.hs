@@ -29,12 +29,9 @@ import Models
 import Configuration
 
 
-
-
-
 app :: Settings -> Application
-app cfg = corsWithContentType $
-    serve (Proxy :: Proxy Root) $ (appToServer cfg)
+app settings = corsWithContentType $
+    serve (Proxy :: Proxy Root) $ appToServer settings
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)
@@ -47,28 +44,29 @@ app cfg = corsWithContentType $
                 }
 
 appToServer :: Settings -> Server Root
-appToServer cfg = enter (convertApp cfg) baseServer
+appToServer settings = enter (convertApp settings) apiServer
 
 convertApp :: Settings -> App :~> ExceptT ServantErr IO
-convertApp cfg = Nat (flip runReaderT cfg . runApp)
+convertApp settings = Nat (flip runReaderT settings . runApp)
 
-baseServer :: Base AsServer
-baseServer = Base
-    { root = files
-    , api  = toServant apiServer
+apiServer :: Endpoints AsServer
+apiServer = Endpoints
+    -- { root = files
+    { accounts = allAccounts
+    , venues = allVenues
     }
 
-apiServer :: Api AsServer
-apiServer = Api
-    { users  = toServant allUsers
-    , venues = toServant allVenues
-    }
+allAccounts :: App [Account]
+allAccounts = do
+    dbAccounts <- runDb $ selectList [] []
+    let accounts = map (convertDbAccount . entityVal) dbAccounts
+    return accounts
 
-allUsers :: App [Entity User]
-allUsers = runDb (selectList [] [])
-
-allVenues :: App [Entity Venue]
-allVenues = runDb (selectList [] [])
+allVenues :: App [Venue]
+allVenues = do
+    dbVenues <- runDb $ selectList [] []
+    let venues = map (convertDbVenue . entityVal) dbVenues
+    return venues
 
 files :: Application
 files = serveDirectory "public"
@@ -80,10 +78,10 @@ main = do
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 3737
     pool <- makePool env
-    let cfg = Settings { getPool = pool, getEnv = env }
+    let settings = Settings { getPool = pool, getEnv = env }
         logger = setLogger env
     runSqlPool doMigrations pool
-    run port $ logger $ app cfg
+    run port $ logger $ app settings
 
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.

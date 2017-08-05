@@ -22,6 +22,7 @@ library:
   - Models
   dependencies:
   - base >=4.7 && <5
+  - aeson
   - elm-export
   - elm-export-persistent
   - persistent
