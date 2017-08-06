@@ -3,8 +3,12 @@
 
 module Generators.ViewParser where
 
-import Data.Text
+import Data.Aeson
+import Data.Aeson.Types
+import Data.HashMap.Strict
+import Data.Text as T
 import qualified Data.Text.IO as IO
+import Prelude hiding (pack)
 import Text.HTML.TagSoup
 import Text.HTML.TagSoup.Match
 import Text.HTML.TagSoup.Tree
@@ -27,10 +31,20 @@ main = do
 injectHaskellIntoHtmlAST :: User -> [TagTree Text] -> [TagTree Text]
 injectHaskellIntoHtmlAST haskell = transformTree injector
     where
-        injector (TagBranch name attrs@[("data-key", "userFirstName")] _) =
-            [TagBranch name attrs [TagLeaf (TagText $ userFirstName haskell)]]
+        injector (TagBranch name attrs@[("data-key", a)] _) =
+            [TagBranch name attrs [TagLeaf (TagText $ decodeObject a (toJSON haskell))]]
         injector x = [x]
 
+
+decodeObject :: Text -> Value -> Text
+decodeObject field record =
+  let parser = withObject (Prelude.head . Prelude.words . show $ record) $ \o -> do
+        val <- o .: field
+        return val
+      result = parse parser record
+  in case result of
+    Error _   -> "IT BROKE"
+    Success v -> v
 
 -- parseTree
 -- [ TagBranch "section" [("data-key","sectionStuff")]
