@@ -1,68 +1,54 @@
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeFamilies #-}
 
 module Models where
+
 
 import Data.Aeson
 import Data.Text
 import Data.Time (UTCTime)
-import Database.Persist.Sql
-import Database.Persist.TH
 import Elm
 import Elm.Export.Persist.Entity ()
 import GHC.Generics
 
--- DB Models
-share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-DbAccount
-  firstName Text
-  lastName Text
-  email Text
-  UniqueEmail email
-  deriving Show Generic
-
-DbVenue
-    date UTCTime
-    location Text
-    deriving Show Generic
-|]
+import qualified Database as Db
 
 data Account = Account
     { firstName :: Text
     , lastName :: Text
     , email :: Text
-    } deriving (Eq, Show, Generic)
+    } deriving
+    ( Eq
+    , Show
+    , Generic
+    , ToJSON
+    , FromJSON
+    , ElmType
+    )
 
-convertDbAccount :: DbAccount -> Account
-convertDbAccount DbAccount{..} = Account
-    { firstName = dbAccountFirstName
-    , lastName = dbAccountLastName
-    , email = dbAccountEmail
+convertDbAccount :: Db.Account -> Account
+convertDbAccount Db.Account{..} = Account
+    { firstName = accountFirstName
+    , lastName = accountLastName
+    , email = accountEmail
     }
-
-instance ToJSON Account
-instance FromJSON Account
-instance ElmType Account
 
 data Venue = Venue
     { date :: UTCTime
     , location :: Text
-    } deriving (Eq, Show, Generic)
+    } deriving
+    ( Eq
+    , Show
+    , Generic
+    , ToJSON
+    , FromJSON
+    , ElmType
+    )
 
-convertDbVenue :: DbVenue -> Venue
-convertDbVenue DbVenue{..} = Venue
-    { date = dbVenueDate
-    , location = dbVenueLocation
+convertDbVenue :: Db.Venue -> Venue
+convertDbVenue Db.Venue{..} = Venue
+    { date = venueDate
+    , location = venueLocation
     }
 
-instance ToJSON Venue
-instance FromJSON Venue
-instance ElmType Venue

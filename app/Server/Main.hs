@@ -24,14 +24,17 @@ import System.Environment (lookupEnv)
 import Safe (readMay)
 
 -- Source
-import Apis
+import Database (doMigrations)
+import Routes
 import Models
 import Configuration
 
 
+type Router = ToServant (Routes AsApi)
+
 app :: Settings -> Application
 app settings = corsWithContentType $
-    serve (Proxy :: Proxy Root) $ toServant (apiServer settings)
+    serve (Proxy :: Proxy Router) $ toServant (apiServer settings)
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)
@@ -46,8 +49,8 @@ app settings = corsWithContentType $
 convertApp :: Settings -> App :~> ExceptT ServantErr IO
 convertApp settings = Nat (flip runReaderT settings . runApp)
 
-apiServer :: Settings -> Endpoints AsServer
-apiServer settings = Endpoints
+apiServer :: Settings -> Routes AsServer
+apiServer settings = Routes
     { accounts = enter (convertApp settings) allAccounts
     , venues = enter (convertApp settings) allVenues
     , root = files
@@ -99,6 +102,4 @@ lookupSetting env def = do
             , env
             ]
 
-doMigrations :: SqlPersistT IO ()
-doMigrations = runMigration migrateAll
 
