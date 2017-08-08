@@ -1,41 +1,54 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Models where
 
+
+import Data.Aeson
 import Data.Text
 import Data.Time (UTCTime)
-import Database.Persist.Sql
-import Database.Persist.TH
 import Elm
 import Elm.Export.Persist.Entity ()
 import GHC.Generics
 
-share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-User json
-  firstName Text
-  lastName  Text
-  email     Text
-  deriving Show Generic
-  UniqueEmail email
+import qualified Database as Db
 
-Venue json
-    date UTCTime
-    location Text
-    deriving Show Generic
-|]
-instance ElmType User
-instance ElmType Venue
+data Account = Account
+    { firstName :: Text
+    , lastName :: Text
+    , email :: Text
+    } deriving
+    ( Eq
+    , Show
+    , Generic
+    , ToJSON
+    , FromJSON
+    , ElmType
+    )
 
--- use GeneralizedNewtypeDeriving for ids
--- this picks a simpler int-encoding
--- deriving instance ElmType UserId
--- deriving instance ElmType VenueId
+convertDbAccount :: Db.Account -> Account
+convertDbAccount Db.Account{..} = Account
+    { firstName = accountFirstName
+    , lastName = accountLastName
+    , email = accountEmail
+    }
+
+data Venue = Venue
+    { date :: UTCTime
+    , location :: Text
+    } deriving
+    ( Eq
+    , Show
+    , Generic
+    , ToJSON
+    , FromJSON
+    , ElmType
+    )
+
+convertDbVenue :: Db.Venue -> Venue
+convertDbVenue Db.Venue{..} = Venue
+    { date = venueDate
+    , location = venueLocation
+    }
+

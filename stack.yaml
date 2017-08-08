@@ -25,6 +25,10 @@ packages:
     commit: dea9e3af87bba51c0adf8c0e4b0da38f50dce4a8
   extra-dep: true
 # - location:
+#     git: https://github.com/erlandsona/servant-generic.git
+#     commit: f731610e499322fd49c40c1e82ecd36058fa0891
+#   extra-dep: true
+# - location:
 #     git: https://github.com/erlandsona/servant-elm.git
 #     commit: 4e27dcc8c135a3c2ced3f6d2de74133532dcd743
 #   extra-dep: true

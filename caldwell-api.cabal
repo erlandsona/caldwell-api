@@ -28,6 +28,7 @@ library
   ghc-options: -Wall -Werror -ddump-deriv -ddump-splices -fno-warn-orphans
   build-depends:
       base >=4.7 && <5
+    , aeson
     , elm-export
     , elm-export-persistent
     , persistent
@@ -40,8 +41,9 @@ library
     , time
     , turtle
   exposed-modules:
-      Apis
+      Database
       Models
+      Routes
   other-modules:
       Paths_caldwell_api
   default-language: Haskell2010
