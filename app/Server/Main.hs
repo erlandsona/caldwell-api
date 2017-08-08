@@ -31,7 +31,7 @@ import Configuration
 
 app :: Settings -> Application
 app settings = corsWithContentType $
-    serve (Proxy :: Proxy Root) $ appToServer settings
+    serve (Proxy :: Proxy Root) $ toServant (apiServer settings)
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)
@@ -43,30 +43,30 @@ app settings = corsWithContentType $
                     ]
                 }
 
-appToServer :: Settings -> Server Root
-appToServer settings = enter (convertApp settings) apiServer
+-- appToServer :: Settings -> Server Root
+-- appToServer settings = apiServer settings
 
 convertApp :: Settings -> App :~> ExceptT ServantErr IO
 convertApp settings = Nat (flip runReaderT settings . runApp)
 
-apiServer :: Endpoints AsServer
-apiServer = Endpoints
+apiServer :: Settings -> Endpoints AsServer
+apiServer settings = Endpoints
     -- { root = files
-    { accounts = allAccounts
-    , venues = allVenues
+    { accounts = enter (convertApp settings) allAccounts
+    , venues = enter (convertApp settings) allVenues
     }
 
 allAccounts :: App [Account]
 allAccounts = do
     dbAccounts <- runDb $ selectList [] []
-    let accounts = map (convertDbAccount . entityVal) dbAccounts
-    return accounts
+    let apiAccounts = map (convertDbAccount . entityVal) dbAccounts
+    return apiAccounts
 
 allVenues :: App [Venue]
 allVenues = do
     dbVenues <- runDb $ selectList [] []
-    let venues = map (convertDbVenue . entityVal) dbVenues
-    return venues
+    let apiVenues = map (convertDbVenue . entityVal) dbVenues
+    return apiVenues
 
 files :: Application
 files = serveDirectory "public"
