@@ -43,17 +43,14 @@ app settings = corsWithContentType $
                     ]
                 }
 
--- appToServer :: Settings -> Server Root
--- appToServer settings = apiServer settings
-
 convertApp :: Settings -> App :~> ExceptT ServantErr IO
 convertApp settings = Nat (flip runReaderT settings . runApp)
 
 apiServer :: Settings -> Endpoints AsServer
 apiServer settings = Endpoints
-    -- { root = files
     { accounts = enter (convertApp settings) allAccounts
     , venues = enter (convertApp settings) allVenues
+    , root = files
     }
 
 allAccounts :: App [Account]
