@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Generators.ViewParser where
 
@@ -16,16 +17,21 @@ import Text.StringLike
 
 
 import Models
+import Validator
+
+
+listFields ''Account
 
 
 main :: IO ()
 main = do
-    document <- IO.readFile "app/Server/TestView/snippet.html"
+    print $ Account { firstName = "Austin", lastName = "Erlandson", email = "austin@erlandson.com"}
+    -- document <- IO.readFile "app/Server/TestView/snippet.html"
 
-    parseTree document |>
-        injectHaskellIntoHtmlAST (Account "Austin" "Erlandson" "austin@erlandson.com") |>
-        renderTree |>
-        print
+    -- parseTree document |>
+    --     injectHaskellIntoHtmlAST (Account "Austin" "Erlandson" "austin@erlandson.com") |>
+    --     renderTree |>
+    --     print
 
 
 injectHaskellIntoHtmlAST :: Account -> [TagTree Text] -> [TagTree Text]
@@ -37,7 +43,7 @@ injectHaskellIntoHtmlAST haskell = transformTree injector
                 False -> [x]
             where
                 injectable = [TagBranch name attrs [TagLeaf (TagText $ decodeObject prop (toJSON haskell))]]
-                prop = Prelude.drop 5 key
+                prop = T.drop 5 key
         injector x = [x]
 
 
@@ -50,6 +56,7 @@ decodeObject field record =
   in case result of
     Error _   -> "IT BROKE"
     Success v -> v
+
 
 x |> f = f x
 infixl 0 |>

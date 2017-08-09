@@ -20,7 +20,7 @@ data Account = Account
     , email :: Text
     } deriving
     ( Eq
-    , Show
+    -- , Show
     , Generic
     , ToJSON
     , FromJSON
