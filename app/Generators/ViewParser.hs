@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Generators.ViewParser where
 
@@ -9,7 +8,7 @@ import Data.Aeson.Types
 import Data.HashMap.Strict
 import Data.Text as T
 import qualified Data.Text.IO as IO
-import Prelude hiding (pack)
+import Prelude as P hiding (pack)
 import Text.HTML.TagSoup
 import Text.HTML.TagSoup.Match
 import Text.HTML.TagSoup.Tree
@@ -17,45 +16,48 @@ import Text.StringLike
 
 
 import Models
-import Validator
-
-
-listFields ''Account
 
 
 main :: IO ()
 main = do
-    print $ Account { firstName = "Austin", lastName = "Erlandson", email = "austin@erlandson.com"}
-    -- document <- IO.readFile "app/Server/TestView/snippet.html"
+    document <- IO.readFile "app/Server/TestView/snippet.html"
 
-    -- parseTree document |>
-    --     injectHaskellIntoHtmlAST (Account "Austin" "Erlandson" "austin@erlandson.com") |>
-    --     renderTree |>
-    --     print
+    parseTree document |>
+        injectHaskellIntoHtmlAST
+            [ Account "Austin" "Erlandson" "austin@erlandson.com"
+            , Account "Emily" "Kroll" "krollemily@ymail.com"
+            ] |>
+        renderTree |>
+        print
 
 
-injectHaskellIntoHtmlAST :: Account -> [TagTree Text] -> [TagTree Text]
-injectHaskellIntoHtmlAST haskell = transformTree injector
+injectHaskellIntoHtmlAST :: [Account] -> [TagTree Text] -> [TagTree Text]
+injectHaskellIntoHtmlAST (acct:accts) html@(tag:tags) = transformTree injector html
     where
-        injector x@(TagBranch name attrs@[(key, val)] _) =
-            case "data-" `isPrefixOf` key of
-                True -> injectable
+        injector x@(TagBranch name attrs@[(typ, key)] _) =
+            case "data-" `isPrefixOf` typ of
+                True -> case T.drop 5 typ of
+                    "string" -> injectable
+                    "list" -> [TagBranch name attrs $ injectHaskellIntoHtmlAST accts tags ]
                 False -> [x]
             where
-                injectable = [TagBranch name attrs [TagLeaf (TagText $ decodeObject prop (toJSON haskell))]]
-                prop = T.drop 5 key
+                injectable =
+                    case decodeObject key acct of
+                        Success v ->
+                            [ TagBranch name attrs
+                                [ TagLeaf (TagText v)
+                                ]
+                            ]
+                        Error _ -> [x]
         injector x = [x]
+injectHaskellIntoHtmlAST [] html = html
 
 
-decodeObject :: Text -> Value -> Text
-decodeObject field record =
-  let parser = withObject (Prelude.head . Prelude.words . show $ record) $ \o -> do
-        val <- o .: field
-        return val
-      result = parse parser record
-  in case result of
-    Error _   -> "IT BROKE"
-    Success v -> v
+decodeObject :: (ToJSON record) => Text -> record -> Result Text
+decodeObject field record = parse parser value
+    where
+        parser = withObject (P.head . P.words . show $ value) $ do (.: field)
+        value = toJSON record
 
 
 x |> f = f x
