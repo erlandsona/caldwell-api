@@ -38,7 +38,7 @@ injectHaskellIntoHtmlAST (acct:accts) html@(tag:tags) = transformTree injector h
             case "data-" `isPrefixOf` typ of
                 True -> case T.drop 5 typ of
                     "string" -> injectable
-                    "list" -> [TagBranch name attrs $ injectHaskellIntoHtmlAST accts tags ]
+                    "list" -> injectHaskellIntoHtmlAST accts tags ++ [x]
                 False -> [x]
             where
                 injectable =
