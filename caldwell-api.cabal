@@ -41,12 +41,10 @@ library
     , template-haskell
     , text
     , time
-    , turtle
   exposed-modules:
       Database
       Models
       Routes
-      Validator
   other-modules:
       Paths_caldwell_api
   default-language: Haskell2010

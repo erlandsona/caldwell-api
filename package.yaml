@@ -21,7 +21,6 @@ library:
   - Database
   - Models
   - Routes
-  - Validator
   dependencies:
   - base >=4.7 && <5
   - aeson
@@ -37,7 +36,6 @@ library:
   - template-haskell
   - text
   - time
-  - turtle
 
 executables:
   caldwell-server:

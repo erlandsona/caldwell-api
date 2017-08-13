@@ -21,8 +21,8 @@ import Models
 main :: IO ()
 main = do
     document <- IO.readFile "app/Server/TestView/snippet.html"
-
-    parseTree document |>
+    document |>
+        parseTree |>
         injectHaskellIntoHtmlAST
             [ Account "Austin" "Erlandson" "austin@erlandson.com"
             , Account "Emily" "Kroll" "krollemily@ymail.com"
@@ -31,26 +31,38 @@ main = do
         print
 
 
+
+
 injectHaskellIntoHtmlAST :: [Account] -> [TagTree Text] -> [TagTree Text]
-injectHaskellIntoHtmlAST (acct:accts) html@(tag:tags) = transformTree injector html
-    where
-        injector x@(TagBranch name attrs@[(typ, key)] _) =
-            case "data-" `isPrefixOf` typ of
-                True -> case T.drop 5 typ of
-                    "string" -> injectable
-                    "list" -> injectHaskellIntoHtmlAST accts tags ++ [x]
-                False -> [x]
-            where
-                injectable =
-                    case decodeObject key acct of
-                        Success v ->
-                            [ TagBranch name attrs
-                                [ TagLeaf (TagText v)
-                                ]
-                            ]
-                        Error _ -> [x]
-        injector x = [x]
+injectHaskellIntoHtmlAST accts html@(_:_:tags) = transformTree (injector accts tags) html
 injectHaskellIntoHtmlAST [] html = html
+
+
+
+
+injector :: [Account] -> [TagTree Text] -> TagTree Text -> [TagTree Text]
+injector (acct:accts) tags tree@(TagBranch name attrs@[(typ, key)] _) =
+    case "data-" `isPrefixOf` typ of
+        True -> case T.drop 5 typ of
+            "string" -> injectable (decodeObject key acct) tree
+            "list" -> tree : injectHaskellIntoHtmlAST accts tags
+        False -> [tree]
+injector _ _ tree = [tree]
+
+
+
+
+injectable :: Result Text -> TagTree Text -> [TagTree Text]
+injectable result tree@(TagBranch name attrs _) =
+    case result of
+        Success v ->
+            [ TagBranch name attrs
+                [ TagLeaf (TagText v)
+                ]
+            ]
+        Error _ -> [tree]
+
+
 
 
 decodeObject :: (ToJSON record) => Text -> record -> Result Text
