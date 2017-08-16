@@ -29,8 +29,6 @@ import Models
 import Configuration
 
 
-type Router = ToServant (Routes AsApi)
-
 app :: Settings -> Application
 app settings = corsWithContentType $
     serve (Proxy :: Proxy Router) $ toServant (apiServer settings)

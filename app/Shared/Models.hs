@@ -15,8 +15,6 @@ import Data.Text
 import Data.Time (UTCTime)
 import Database.Persist.Sql
 import Database.Persist.TH
-import Elm
-import Elm.Export.Persist.Entity ()
 import GHC.Generics
 
 -- DB Models
@@ -34,9 +32,6 @@ Venue json
     location Text
     deriving Show Generic
 |]
-
-instance ElmType Account
-instance ElmType Venue
 
 doMigrations :: SqlPersistT IO ()
 doMigrations = do

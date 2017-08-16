@@ -16,3 +16,6 @@ data Routes path = Routes
     , venues :: path :- "api" :> "shows" :> Get '[JSON] [Venue]
     , root :: path :- Raw
     } deriving Generic
+
+type Router = ToServant (Routes AsApi)
+

@@ -10,7 +10,9 @@ extra-source-files:
 - README.md
 
 library:
-  source-dirs: app/Shared
+  source-dirs:
+    - app/Shared
+    - app/Generators
   ghc-options:
   - -Wall
   - -Werror
@@ -20,11 +22,11 @@ library:
   exposed-modules:
   - Models
   - Routes
+  - ViewParser
   dependencies:
   - base >=4.7 && <5
+  - bytestring
   - aeson
-  - elm-export
-  - elm-export-persistent
   - persistent
   - persistent-postgresql
   - persistent-template
@@ -35,6 +37,7 @@ library:
   - template-haskell
   - text
   - time
+  - turtle
 
 executables:
   caldwell-server:
@@ -74,3 +77,6 @@ tests:
     dependencies:
     - base
     - caldwell-api
+    - hspec
+    - text
+    - neat-interpolation
