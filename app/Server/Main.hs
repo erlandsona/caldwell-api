@@ -24,7 +24,6 @@ import System.Environment (lookupEnv)
 import Safe (readMay)
 
 -- Source
-import Database (doMigrations)
 import Routes
 import Models
 import Configuration
@@ -59,14 +58,12 @@ apiServer settings = Routes
 allAccounts :: App [Account]
 allAccounts = do
     dbAccounts <- runDb $ selectList [] []
-    let apiAccounts = map (convertDbAccount . entityVal) dbAccounts
-    return apiAccounts
+    return $ entityVal <$> dbAccounts
 
 allVenues :: App [Venue]
 allVenues = do
     dbVenues <- runDb $ selectList [] []
-    let apiVenues = map (convertDbVenue . entityVal) dbVenues
-    return apiVenues
+    return $ entityVal <$> dbVenues
 
 files :: Application
 files = serveDirectory "public"
@@ -81,6 +78,8 @@ main = do
     let settings = Settings { getPool = pool, getEnv = env }
         logger = setLogger env
     runSqlPool doMigrations pool
+    -- runSqlPool seeds pool if 
+    putStrLn $ "Serving on PORT: " ++ show port
     run port $ logger $ app settings
 
 -- | Looks up a setting in the environment, with a provided default, and

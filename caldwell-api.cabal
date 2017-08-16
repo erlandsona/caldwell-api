@@ -42,7 +42,6 @@ library
     , text
     , time
   exposed-modules:
-      Database
       Models
       Routes
   other-modules:
@@ -53,7 +52,7 @@ executable caldwell-server
   main-is: Main.hs
   hs-source-dirs:
       app/Server
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Wall -Werror
+  ghc-options: -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , bytestring
