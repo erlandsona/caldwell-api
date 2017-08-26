@@ -76,7 +76,6 @@ main = do
     let settings = Settings { getPool = pool, getEnv = env }
         logger = setLogger env
     runSqlPool doMigrations pool
-    -- runSqlPool seeds pool if 
     putStrLn $ "Serving on PORT: " ++ show port
     run port $ logger $ app settings
 
@@ -99,4 +98,7 @@ lookupSetting env def = do
             , env
             ]
 
-
+doMigrations :: SqlPersistT IO ()
+doMigrations = do
+    printMigration migrateAll
+    runMigration migrateAll

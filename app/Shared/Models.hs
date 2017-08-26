@@ -1,10 +1,10 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
@@ -27,15 +27,20 @@ Account json
     -- friends [Account]
     deriving Show Generic
 
-Venue json
+Gig json
     date UTCTime
-    location Text
-    deriving Show Generic
+    venueId VenueId
+    deriving Eq Show
+
+Venue json
+    name Text
+    -- Consider adding for Maps or something.
+    -- street Text
+    -- city Text
+    -- state Text
+    -- zip Integer
+    deriving Show
+
+
+ -- By default this file is used in Model.hs (which is imported by Foundation.hs)
 |]
-
-doMigrations :: SqlPersistT IO ()
-doMigrations = do
-    printMigration migrateAll
-    runMigration migrateAll
-
-
