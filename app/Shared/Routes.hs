@@ -13,7 +13,7 @@ import Models
 
 data Routes path = Routes
     { accounts :: path :- "api" :> "accounts" :> Get '[JSON] [Account]
-    , venues :: path :- "api" :> "shows" :> Get '[JSON] [Venue]
+    , gigs :: path :- "api" :> "shows" :> Get '[JSON] [Gig]
     , root :: path :- Raw
     } deriving Generic
 

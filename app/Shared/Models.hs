@@ -24,23 +24,25 @@ Account json
     lastName Text
     email Text
     UniqueEmail email
-    -- friends [Account]
     deriving Show Generic
 
 Gig json
     date UTCTime
-    venueId VenueId
-    deriving Eq Show
+    venue Text
+    -- venueId VenueId
+    deriving Show Generic
 
-Venue json
-    name Text
-    -- Consider adding for Maps or something.
-    -- street Text
-    -- city Text
-    -- state Text
-    -- zip Integer
-    deriving Show
+-- Venue json
+--     name Text
+--     -- locationId LocationId
+--     deriving Show
 
-
- -- By default this file is used in Model.hs (which is imported by Foundation.hs)
+-- Location json
+--     -- Consider adding for Maps or something.
+--     -- Maybe needs it's own model like Location
+--     street Text
+--     city Text
+--     state Text
+--     zip Integer
+--     deriving Show
 |]

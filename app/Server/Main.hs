@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeOperators     #-}
 
@@ -20,13 +19,11 @@ import Network.Wai.Middleware.Cors
     )
 import Servant
 import Servant.Generic
-import System.Environment (lookupEnv)
-import Safe (readMay)
 
 -- Source
-import Routes
-import Models
 import Configuration
+import Models
+import Routes
 
 
 app :: Settings -> Application
@@ -49,7 +46,7 @@ convertApp settings = Nat (flip runReaderT settings . runApp)
 apiServer :: Settings -> Routes AsServer
 apiServer settings = Routes
     { accounts = enter (convertApp settings) allAccounts
-    , venues = enter (convertApp settings) allVenues
+    , gigs = enter (convertApp settings) allGigs
     , root = files
     }
 
@@ -58,10 +55,10 @@ allAccounts = do
     dbAccounts <- runDb $ selectList [] []
     return $ entityVal <$> dbAccounts
 
-allVenues :: App [Venue]
-allVenues = do
-    dbVenues <- runDb $ selectList [] []
-    return $ entityVal <$> dbVenues
+allGigs :: App [Gig]
+allGigs = do
+    dbGigs <- runDb $ selectList [] []
+    return $ entityVal <$> dbGigs
 
 files :: Application
 files = serveDirectory "public"
@@ -78,25 +75,6 @@ main = do
     runSqlPool doMigrations pool
     putStrLn $ "Serving on PORT: " ++ show port
     run port $ logger $ app settings
-
--- | Looks up a setting in the environment, with a provided default, and
--- 'read's that information into the inferred type.
-lookupSetting :: Read a => String -> a -> IO a
-lookupSetting env def = do
-    maybeValue <- lookupEnv env
-    case maybeValue of
-        Nothing ->
-            return def
-        Just str ->
-            maybe (handleFailedRead str) return (readMay str)
-  where
-    handleFailedRead str =
-        error $ mconcat
-            [ "Failed to read [["
-            , str
-            , "]] for environment variable "
-            , env
-            ]
 
 doMigrations :: SqlPersistT IO ()
 doMigrations = do

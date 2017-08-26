@@ -2,7 +2,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
@@ -35,8 +34,8 @@ instance ToSample Account where
     toSamples _ = singleSample $ Account "Austin" "Erlandson" "austin@erlandson.com"
 
 
-instance ToSample Venue where
-    toSamples _ = singleSample $ Venue (UTCTime (fromGregorian 2017 7 21) (secondsToDiffTime 0)) "Somthing"
+instance ToSample Gig where
+    toSamples _ = singleSample $ Gig (UTCTime (fromGregorian 2017 7 21) (secondsToDiffTime 0)) "Somthing"
 
 
 main :: IO ()

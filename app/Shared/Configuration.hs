@@ -1,6 +1,5 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings          #-}
 
 module Configuration where
 
@@ -26,6 +25,7 @@ import Database.Persist.Postgresql
     )
 import Network.Wai (Middleware)
 import Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
+import Safe (readMay)
 import Servant (ServantErr)
 import System.Environment (lookupEnv)
 
@@ -127,3 +127,22 @@ runDb :: (MonadReader Settings m, MonadIO m) => SqlPersistT IO b -> m b
 runDb query = do
     pool <- asks getPool
     liftIO $ runSqlPool query pool
+
+-- | Looks up a setting in the environment, with a provided default, and
+-- 'read's that information into the inferred type.
+lookupSetting :: Read a => String -> a -> IO a
+lookupSetting env def = do
+    maybeValue <- lookupEnv env
+    case maybeValue of
+        Nothing ->
+            return def
+        Just str ->
+            maybe (handleFailedRead str) return (readMay str)
+  where
+    handleFailedRead str =
+        error $ mconcat
+            [ "Failed to read [["
+            , str
+            , "]] for environment variable "
+            , env
+            ]
