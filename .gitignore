@@ -33,3 +33,4 @@ Session.vim
 app/Client/Generated.elm
 tags
 tags*
+*.cabal

@@ -3,18 +3,24 @@ module Nav.View exposing (template)
 -- Libs
 
 import Html exposing (..)
+import Html.CssHelpers exposing (withNamespace)
 import Html.Events exposing (onClick, onWithOptions, Options)
 import Json.Decode exposing (succeed)
 
 
 -- Source
 
-import Types exposing (Msg(..), Nav(..), Page(..))
+import Types exposing (..)
+import Constants exposing (homepage)
+
+
+{ class } =
+    withNamespace homepage
 
 
 template : Nav -> Html Msg
 template navState =
-    nav [ clickWithStopProp (Toggle Closed) ]
+    nav [ class [ Navbar ], clickWithStopProp (Toggle Closed) ]
         [ aTag Home
         , aTag About
         , aTag Shows
@@ -34,11 +40,18 @@ aTag page =
 
 not : Nav -> Nav
 not navState =
-  case navState of
-    Open -> Closed
-    Closed -> Open
+    case navState of
+        Open ->
+            Closed
+
+        Closed ->
+            Open
+
 
 clickWithStopProp : Msg -> Attribute Msg
 clickWithStopProp msg =
-    onWithOptions "click" (Options True     False) (succeed msg)
-                        -- Options stopProp prevDefault
+    onWithOptions "click" (Options True False) (succeed msg)
+
+
+
+-- Options stopProp prevDefault

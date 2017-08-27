@@ -16,18 +16,22 @@ import Html.CssHelpers exposing (withNamespace)
 -- Source
 
 import Bio.View as Bio
-import Constants exposing (caldwellCalendar)
+import Constants
+    exposing
+        ( caldwellCalendar
+        , homepage
+        )
 import Server exposing (Gig)
 import Types exposing (..)
 
 
 { id, class } =
-    withNamespace ""
+    withNamespace homepage
 
 
 template : List Gig -> Html Msg
 template gigs =
-    main_ []
+    main_ [ class [ Main ] ]
         [ section [ id Home ]
             [ socialLink "facebook" "CaldwellBand" Social.facebook_square
             , socialLink "twitter" "caldwell_band" Social.twitter_square

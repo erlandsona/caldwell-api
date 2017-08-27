@@ -29,6 +29,8 @@ type Msg
 type HtmlClass
     = Gigs
     | Gig
+    | Main
+    | Navbar
 
 
 type Nav

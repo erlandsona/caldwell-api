@@ -12,6 +12,7 @@ import Date.Extra.Compare exposing (is, Compare2(..))
 import Http
 import Html exposing (Html, Attribute, header, node, span, text)
 import Html.Events exposing (onClick)
+import Html.CssHelpers exposing (withNamespace)
 
 
 -- import Json.Decode.Pipeline exposing (decode, required)
@@ -41,6 +42,7 @@ import Constants
         ( blackOverlay
         , caldwellBackground
         , container
+        , homepage
         )
 import Main.View as Main
 import Nav.View as Nav
@@ -85,9 +87,8 @@ init { cachedGigs, now } location =
             , nav = Closed
             , shows =
                 (decodeLocalStorageGigs today cachedGigs)
-                    -- |> List.filter (.gigDate >> is SameOrBefore today)
-                    |>
-                        List.sortBy (Date.toTime << .gigDate)
+                    |> List.filter (.gigDate >> is SameOrAfter today)
+                    |> List.sortBy (Date.toTime << .gigDate)
             }
     in
         model
@@ -112,6 +113,10 @@ urlParser =
         , Url.map Music (s "music")
         , Url.map Contact (s "contact")
         ]
+
+
+{ id, class, classList } =
+    withNamespace homepage
 
 
 view : Model -> Html Msg
