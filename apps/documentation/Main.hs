@@ -5,7 +5,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Docs where
+module Main where
 
 import Data.ByteString.Lazy (ByteString, writeFile)
 import Data.Proxy
@@ -20,6 +20,8 @@ import Routes
 import Models
 
 
+
+-- Stuff and things
 
 docsBS :: ByteString
 docsBS = encodeUtf8

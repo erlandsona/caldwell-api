@@ -23,8 +23,11 @@ dependencies:
   - persistent-template
   - safe
   - servant-docs
+  - servant-elm
+  - servant-foreign
   - servant-generic
   - servant-server
+  - template-haskell
   - text
   - time
   - transformers
@@ -38,7 +41,7 @@ default-extensions:
   - OverloadedStrings
 
 library:
-  source-dirs: app/Shared
+  source-dirs: src
   when:
     - condition: (flag(dev)) || (flag(library-only))
       then:
@@ -59,9 +62,9 @@ library:
         - -O2
 
 executables:
-  caldwell:
+  caldwell: &defaults
     main: Main.hs
-    source-dirs: app/Server
+    source-dirs: apps/server
     ghc-options:
       - -Wall
       - -Werror
@@ -73,24 +76,26 @@ executables:
     when:
       - condition: flag(library-only)
         buildable: false
+  docs:
+    <<: *defaults
+    main: Main.hs
+    source-dirs: apps/documentation
+  elm-code:
+    <<: *defaults
+    main: Main.hs
+    source-dirs: apps/elm-code
   seed:
+    <<: *defaults
     main: Seeds.hs
     source-dirs: db
-    ghc-options:
-      - -threaded
-      - -rtsopts
-      - -with-rtsopts=-N
-    dependencies:
-      - caldwell
-    when:
-      - condition: flag(library-only)
-        buildable: false
 
 tests:
   caldwell-test:
     main: Spec.hs
     source-dirs: test
     ghc-options:
+      - -Wall
+      - -Werror
       - -threaded
       - -rtsopts
       - -with-rtsopts=-N

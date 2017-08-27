@@ -1,12 +1,12 @@
-{-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 
-module ElmCode where
+module Main where
 
 -- Libs
 import Data.Proxy
 import Data.Text as T
-import Database.Persist.Postgresql (Entity(..))
 import Elm
 import Servant.Elm
     ( ElmOptions(..)
@@ -26,20 +26,19 @@ main = do
     --     , std_out = CreatePipe
     --     }
     -- let formattedSpec = elmFormat $ T.unlines elmText
-    specsToDir [spec] "app/Client"
+    specsToDir [spec] "client"
 
 
 
 spec :: Spec
 spec = Spec ["Server"] elmText
 
-
 elmText :: [Text]
 elmText =
     ( defElmImports
-    : mkElmTypeEnDecoders (Proxy :: Proxy User)
-    : mkElmTypeEnDecoders (Proxy :: Proxy Venue)
-    : generateElmForAPIWith options (Proxy :: Proxy Router)
+    : mkElmTypeD'Encoders (Proxy :: Proxy Account)
+    : mkElmTypeD'Encoders (Proxy :: Proxy Gig)
+    : generateElmForAPIWith options (Proxy :: Proxy ApiRouter)
     )
 
 
@@ -68,5 +67,3 @@ defElmImports =
     ]
 
 
-instance ElmType ''User
-instance ElmType ''Venue

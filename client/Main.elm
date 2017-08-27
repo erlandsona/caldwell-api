@@ -23,6 +23,7 @@ import Json.Decode exposing (decodeValue, int, keyValuePairs, maybe, string)
 
 import Json.Encode exposing (Value)
 import Maybe exposing (withDefault)
+import Maybe.Extra exposing (unpack)
 import Navigation as Nav exposing (programWithFlags, Location)
 import String exposing (toLower)
 
@@ -45,7 +46,7 @@ import Main.View as Main
 import Nav.View as Nav
 import Model exposing (Model)
 import Ports exposing (easeIntoView, snapIntoView)
-import Server exposing (Venue, getApiShows, decodeVenue)
+import Server exposing (Gig, getV1Shows, decodeGig)
 import Styles as Styles
 import Types exposing (..)
 
@@ -54,53 +55,39 @@ import Types exposing (..)
 
 
 type alias Initializer =
-    { shows : Maybe Value
+    { cachedGigs : Maybe Value
     , now : Time
     }
 
 
-showsDecoder : Date -> Maybe Value -> List Venue
-showsDecoder today json =
+decodeLocalStorageGigs : Date -> Maybe Value -> List Gig
+decodeLocalStorageGigs today json =
     let
-        noShowsVenue =
-            Venue (Just -1) today "No Shows Scheduled"
+        decodedGigs json =
+            case (decodeValue (decodeGig |> keyValuePairs) json) of
+                Ok shows ->
+                    List.map (\( msg, location ) -> (Debug.log msg) location) shows
 
-        decodedVenues json =
-            let
-                decoded =
-                    decodeValue (decodeVenue |> keyValuePairs)
-            in
-                case (decoded json) of
-                    Ok shows ->
-                        List.map (\( msg, location ) -> (Debug.log msg) location) shows
-
-                    Err msg ->
-                        Debug.log msg [ noShowsVenue ]
+                Err msg ->
+                    Debug.log msg []
     in
-        case json of
-            Just json ->
-                decodedVenues json
-
-            Nothing ->
-                Debug.log "No Shows" [ noShowsVenue ]
+        unpack (\() -> Debug.log "No shows in local storage." []) decodedGigs json
 
 
 init : Initializer -> Location -> ( Model, Cmd Msg )
-init { shows, now } location =
+init { cachedGigs, now } location =
     let
         today =
             Date.fromTime now
-
-        venues =
-            showsDecoder today shows
 
         model =
             { history = [ parse location ]
             , nav = Closed
             , shows =
-                venues
-                    |> List.filter (.venueDate >> is SameOrBefore today)
-                    |> List.sortBy (Date.toTime << .venueDate)
+                (decodeLocalStorageGigs today cachedGigs)
+                    -- |> List.filter (.gigDate >> is SameOrBefore today)
+                    |>
+                        List.sortBy (Date.toTime << .gigDate)
             }
     in
         model
@@ -108,7 +95,7 @@ init { shows, now } location =
                     |> parse
                     |> toString
                     |> snapIntoView
-              , Http.send ShowResponse getApiShows
+              , Http.send ShowResponse getV1Shows
               ]
 
 
@@ -148,36 +135,40 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GoToPage location ->
-            ( { model | history = (::) (parse location) model.history }
-            , location
-                |> parse
-                |> toString
-                |> easeIntoView
-            )
+            { model | history = (::) (parse location) model.history }
+                ! [ location
+                        |> parse
+                        |> toString
+                        |> easeIntoView
+                  ]
 
         SetUrl url ->
-            ( model
-            , Nav.newUrl <|
-                if url == Home then
-                    "/"
-                else
-                    url |> toString |> toLower
-            )
+            model
+                ! [ Nav.newUrl <|
+                        if url == Home then
+                            "/"
+                        else
+                            url |> toString |> toLower
+                  ]
 
         Toggle newState ->
-            ( { model | nav = newState }, Cmd.none )
+            { model | nav = newState } ! []
 
-        ShowResponse results ->
-            let
-                _ =
-                    Debug.log <| toString results
-            in
-                case results of
-                    Ok shows ->
-                        ( { model | shows = shows }, Cmd.none )
+        ShowResponse response ->
+            case response of
+                Ok shows ->
+                    let
+                        _ =
+                            Debug.log "Shows Reponse" <| toString shows
+                    in
+                        { model | shows = shows } ! []
 
-                    Err msg ->
-                        ( model, Cmd.none )
+                Err msg ->
+                    let
+                        _ =
+                            Debug.log "Shows Reponse" <| toString msg
+                    in
+                        model ! []
 
 
 main : Program Initializer Model Msg

@@ -4,7 +4,7 @@
     "repository": "https://github.com/erlandsona/caldwell.git",
     "license": "MIT",
     "source-directories": [
-        "app/Client"
+        "client"
     ],
     "exposed-modules": [],
     "dependencies": {

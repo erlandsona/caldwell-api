@@ -2,30 +2,35 @@
 # The commands without comments don't get included :)
 
 
-install: #Setup# stack, entr, yarn, elm, webpack (OS X only)
-	# @TODO make this immutable?
-	# brew install haskell-stack yarn
-	# yarn global add elm@0.18.0 elm-test webpack
-	# stack setup
-	# So turns out buildpack-stack runs make install... so lets
-	# just put this here temporarily
-	stack setup
-	stack build --fast --copy-bins
+# install: #Setup# stack, entr, yarn, elm, webpack (OS X only)
+# 	# @TODO make this immutable?
+# 	# brew install haskell-stack yarn
+# 	# yarn global add elm@0.18.0 elm-test webpack
+# 	# stack setup
+# 	# So turns out buildpack-stack runs make install... so lets
+# 	# just put this here temporarily
+# 	stack setup
+# 	stack build --fast --copy-bins
 
 live: #Development# Run both frontend/backend and rebuild/rerun when files change
 	@./scripts/live
 
 live-frontend:
-	yarn start | grep -v --line-buffered "./~/"
+	find . | grep '\./client/.*' | entr -r make build-client
 
 live-backend:
-	find . | grep 'app/.*\.hs' | entr -r make run
+	find . | grep '\./src/.*'; find . | grep '\./apps/.*'; find . | grep '\./db/.*'; | entr -r make build-server
 
-# live-elm:
-# 	find . | grep '\./app/Client/.*\.elm' | entr -r make build-elm
+build-client:
+	yarn build-dev | grep -v --line-buffered "./~/"
 
-fe:
-	yarn build
+build-server: #Tools# Build & export server types to Elm
+	stack build --pedantic --fast
+	stack exec elm-code
+	stack exec docs
+	elm-format client/Server.elm --yes
+	stack exec caldwell
+	# @TODO don't export if the file is unchanged, so we don't trigger Elm rebuilds needlessly
 
 test: #Development# Run server/frontend tests
 	stack test
@@ -42,18 +47,18 @@ test: #Development# Run server/frontend tests
 # 	# https://blog.dekstroza.io/ulimit-shenanigans-on-osx-el-capitan/
 
 # format: #Development# Format elm source with elm-format standard
-# 	elm-format app/Client/Main.elm
+# 	elm-format client/Main.elm
 
-build: #Development# Build server binary and client app.js
-	stack build --pedantic --fast
-	# yarn run build
+# build: #Development# Build server binary and client app.js
+# 	stack build --pedantic --fast
+# 	# yarn run build
 
 # perf:
 # 	# stack build --pedantic --fast --ghc-options="-fno-warn-orphans -ddump-splices" --profile --threaded
-# 	/usr/local/lib/node_modules/elm/Elm-Platform/0.18.0/.cabal-sandbox/bin/elm-make app/Client/App.elm --output=public/app-elm-make.js +RTS -s -p
+# 	/usr/local/lib/node_modules/elm/Elm-Platform/0.18.0/.cabal-sandbox/bin/elm-make client/App.elm --output=public/app-elm-make.js +RTS -s -p
 
 
-be: build
+# be: build
 
 # clean: ## Clean build and test artifacts
 	# Not fun to accidentally run this on a mobile-only connection :(
@@ -62,13 +67,6 @@ be: build
 # watch: #Development# Rebuild server when files change
 # 	stack build --pedantic --file-watch-poll --fast --ghc-options -ddump-splices
 
-run: #Tools# Build & export server types to Elm
-	stack build
-	stack runghc app/Generators/ElmCode.hs --package caldwell-api
-	stack runghc app/Generators/Docs.hs --package caldwell-api
-	elm-format app/Client/Server.elm --yes
-	stack exec caldwell-api
-	# @TODO don't export if the file is unchanged, so we don't trigger Elm rebuilds needlessly
 
 # precommit: #Tools# Install git pre-commit hook to ensure build is green
 # 	echo "set -e; make build; make test" > .git/hooks/pre-commit
@@ -82,7 +80,7 @@ run: #Tools# Build & export server types to Elm
 # 	heroku buildpacks:add https://github.com/heroku/heroku-buildpack-multi
 
 # sizes:
-# 	elm make app/Client/App.elm --output=public/app-elm-make.js
+# 	elm make client/App.elm --output=public/app-elm-make.js
 # 	# yarn run build
 # 	@echo
 # 	# Elm Stats

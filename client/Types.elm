@@ -1,10 +1,15 @@
 module Types exposing (..)
 
+-- Libs
+
 import Http
 import Navigation exposing (Location)
--- import Time exposing (Time)
 
-import Server exposing (Venue)
+
+-- Source
+
+import Server exposing (Gig)
+
 
 type Page
     = Home
@@ -13,15 +18,19 @@ type Page
     | About
     | Contact
 
+
 type Msg
     = GoToPage Location
     | SetUrl Page
     | Toggle Nav
-    | ShowResponse (Result Http.Error (List Venue))
+    | ShowResponse (Result Http.Error (List Gig))
+
 
 type HtmlClass
     = Gigs
     | Gig
 
-type Nav = Open | Closed
 
+type Nav
+    = Open
+    | Closed

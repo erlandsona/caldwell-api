@@ -28,7 +28,7 @@ import Routes
 
 app :: Settings -> Application
 app settings = corsWithContentType $
-    serve (Proxy :: Proxy Router) $ toServant (apiServer settings)
+    serve (Proxy :: Proxy Router) $ toServant (server settings)
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)
@@ -43,11 +43,16 @@ app settings = corsWithContentType $
 convertApp :: Settings -> App :~> ExceptT ServantErr IO
 convertApp settings = Nat (flip runReaderT settings . runApp)
 
-apiServer :: Settings -> Routes AsServer
-apiServer settings = Routes
+server :: Settings -> Routes AsServer
+server settings = Routes
+    { api = toServant (apiServer settings)
+    , root = files
+    }
+
+apiServer :: Settings -> ApiRoutes AsServer
+apiServer settings = ApiRoutes
     { accounts = enter (convertApp settings) allAccounts
     , gigs = enter (convertApp settings) allGigs
-    , root = files
     }
 
 allAccounts :: App [Account]

@@ -11,22 +11,24 @@
 module Models where
 
 
+import Data.Aeson
 import Data.Text
 import Data.Time (UTCTime)
 import Database.Persist.Sql
 import Database.Persist.TH
+import Elm
 import GHC.Generics
 
 -- DB Models
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-Account json
+Account
     firstName Text
     lastName Text
     email Text
     UniqueEmail email
     deriving Show Generic
 
-Gig json
+Gig
     date UTCTime
     venue Text
     -- venueId VenueId
@@ -46,3 +48,11 @@ Gig json
 --     zip Integer
 --     deriving Show
 |]
+
+instance ElmType Account
+instance ToJSON Account
+instance FromJSON Account
+
+instance ElmType Gig
+instance ToJSON Gig
+instance FromJSON Gig

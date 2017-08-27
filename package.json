@@ -46,6 +46,7 @@
     "clean": "rimraf public node_modules elm-stuff",
     "prebuild": "rimraf public",
     "build": "webpack --config webpack.coffee",
+    "build-dev": "webpack --config webpack.coffee",
     "postinstall": "elm package install -y",
     "prestart": "rimraf public",
     "start": "webpack-dev-server --hot --inline --config webpack.coffee",

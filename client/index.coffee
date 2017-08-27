@@ -1,7 +1,6 @@
 require 'font-awesome/css/font-awesome'
 require('smoothscroll-polyfill').polyfill()
 require('fastclick').attach document.body
-{ database, auth } = require './firebase'
 
 # Source
 require './assets/fonts'
@@ -9,12 +8,12 @@ require './Stylesheets'
 
 
 now = new Date().getTime()
-shows = try JSON.parse localStorage.getItem('shows')
+cachedGigs = try JSON.parse localStorage.getItem('gigs')
 
 
 # Attach port handlers to app instance.
 # app : Initializer -> Program (Maybe Value) Model Msg
-app = require('./Main').Site.fullscreen { shows, now }
+app = require('./Main').Site.fullscreen { cachedGigs, now }
 
 
 # Smooth Scrolling between Nav Links
