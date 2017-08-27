@@ -16,18 +16,22 @@ import Html.CssHelpers exposing (withNamespace)
 -- Source
 
 import Bio.View as Bio
-import Constants exposing (caldwellCalendar)
-import Server exposing (Venue)
+import Constants
+    exposing
+        ( caldwellCalendar
+        , homepage
+        )
+import Server exposing (Gig)
 import Types exposing (..)
 
 
 { id, class } =
-    withNamespace ""
+    withNamespace homepage
 
 
-template : List Venue -> Html Msg
-template venues =
-    main_ []
+template : List Gig -> Html Msg
+template gigs =
+    main_ [ class [ Main ] ]
         [ section [ id Home ]
             [ socialLink "facebook" "CaldwellBand" Social.facebook_square
             , socialLink "twitter" "caldwell_band" Social.twitter_square
@@ -35,7 +39,7 @@ template venues =
             , socialLink "reverbnation" "caldwellband" Icon.star
             ]
         , section [ id About ] Bio.template
-        , section [ id Shows ] [ caldwellCalendar_ venues ]
+        , section [ id Shows ] [ caldwellCalendar_ gigs ]
         , section [ id Music ]
             [ h2 [] [ text (toString Music) ]
             , fadingHr
@@ -65,28 +69,28 @@ template venues =
         ]
 
 
-caldwellCalendar_ : List Venue -> Html a
-caldwellCalendar_ venues =
+caldwellCalendar_ : List Gig -> Html a
+caldwellCalendar_ gigs =
     node caldwellCalendar
         []
         [ h2 [] [ text (toString Shows) ]
         , fadingHr
         , ul [ class [ Gigs ] ] <|
             List.intersperse fadingHr <|
-                List.map (venueToElmHtml) venues
+                List.map (gigToElmHtml) gigs
         ]
 
 
-venueToElmHtml : Venue -> Html a
-venueToElmHtml { venueDate, venueLocation } =
-    li [ class [ Gig ] ] <|
+gigToElmHtml : Gig -> Html a
+gigToElmHtml { gigDate, gigVenue } =
+    li [ class [ Types.Gig ] ] <|
         List.map
             (\string ->
                 span [] [ text string ]
             )
-            [ dayStringer venueDate
-            , venueLocation
-            , format C_en_us.config "%l:%M%P" venueDate
+            [ dayStringer gigDate
+            , gigVenue
+            , format C_en_us.config "%l:%M%P" gigDate
             ]
 
 

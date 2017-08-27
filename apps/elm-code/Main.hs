@@ -1,13 +1,12 @@
-{-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 
-module ElmCode where
+module Main where
 
 -- Libs
 import Data.Proxy
 import Data.Text as T
-import Database.Persist.Postgresql (Entity(..))
 import Elm
 import Servant.Elm
     ( ElmOptions(..)
@@ -17,7 +16,7 @@ import Servant.Elm
     )
 
 -- Source
-import Apis
+import Routes
 import Models
 
 main :: IO ()
@@ -27,25 +26,24 @@ main = do
     --     , std_out = CreatePipe
     --     }
     -- let formattedSpec = elmFormat $ T.unlines elmText
-    specsToDir [spec] "app/Client"
+    specsToDir [spec] "client"
 
 
 
 spec :: Spec
 spec = Spec ["Server"] elmText
 
-
 elmText :: [Text]
 elmText =
     ( defElmImports
-    : mkElmTypeEnDecoders (Proxy :: Proxy (Entity User))
-    : mkElmTypeEnDecoders (Proxy :: Proxy (Entity Venue))
-    : generateElmForAPIWith options (Proxy :: Proxy Endpoints)
+    : mkElmTypeD'Encoders (Proxy :: Proxy Account)
+    : mkElmTypeD'Encoders (Proxy :: Proxy Gig)
+    : generateElmForAPIWith options (Proxy :: Proxy ApiRouter)
     )
 
 
-mkElmTypeEnDecoders :: ElmType a => a -> Text
-mkElmTypeEnDecoders a = T.intercalate "\n\n\n"
+mkElmTypeD'Encoders :: ElmType a => a -> Text
+mkElmTypeD'Encoders a = T.intercalate "\n\n\n"
     [ toElmTypeSource a
     , toElmDecoderSource a
     , toElmEncoderSource a
@@ -67,3 +65,5 @@ defElmImports =
     , "import Json.Encode"
     , "import String"
     ]
+
+

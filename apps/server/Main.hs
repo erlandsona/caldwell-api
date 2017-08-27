@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeOperators     #-}
 
@@ -20,21 +19,16 @@ import Network.Wai.Middleware.Cors
     )
 import Servant
 import Servant.Generic
-import System.Environment (lookupEnv)
-import Safe (readMay)
 
 -- Source
-import Database (doMigrations)
-import Routes
-import Models
 import Configuration
+import Models
+import Routes
 
-
-type Router = ToServant (Routes AsApi)
 
 app :: Settings -> Application
 app settings = corsWithContentType $
-    serve (Proxy :: Proxy Router) $ toServant (apiServer settings)
+    serve (Proxy :: Proxy Router) $ toServant (server settings)
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)
@@ -49,24 +43,27 @@ app settings = corsWithContentType $
 convertApp :: Settings -> App :~> ExceptT ServantErr IO
 convertApp settings = Nat (flip runReaderT settings . runApp)
 
-apiServer :: Settings -> Routes AsServer
-apiServer settings = Routes
-    { accounts = enter (convertApp settings) allAccounts
-    , venues = enter (convertApp settings) allVenues
+server :: Settings -> Routes AsServer
+server settings = Routes
+    { api = toServant (apiServer settings)
     , root = files
+    }
+
+apiServer :: Settings -> ApiRoutes AsServer
+apiServer settings = ApiRoutes
+    { accounts = enter (convertApp settings) allAccounts
+    , gigs = enter (convertApp settings) allGigs
     }
 
 allAccounts :: App [Account]
 allAccounts = do
     dbAccounts <- runDb $ selectList [] []
-    let apiAccounts = map (convertDbAccount . entityVal) dbAccounts
-    return apiAccounts
+    return $ entityVal <$> dbAccounts
 
-allVenues :: App [Venue]
-allVenues = do
-    dbVenues <- runDb $ selectList [] []
-    let apiVenues = map (convertDbVenue . entityVal) dbVenues
-    return apiVenues
+allGigs :: App [Gig]
+allGigs = do
+    dbGigs <- runDb $ selectList [] []
+    return $ entityVal <$> dbGigs
 
 files :: Application
 files = serveDirectory "public"
@@ -81,25 +78,10 @@ main = do
     let settings = Settings { getPool = pool, getEnv = env }
         logger = setLogger env
     runSqlPool doMigrations pool
+    putStrLn $ "Serving on PORT: " ++ show port
     run port $ logger $ app settings
 
--- | Looks up a setting in the environment, with a provided default, and
--- 'read's that information into the inferred type.
-lookupSetting :: Read a => String -> a -> IO a
-lookupSetting env def = do
-    maybeValue <- lookupEnv env
-    case maybeValue of
-        Nothing ->
-            return def
-        Just str ->
-            maybe (handleFailedRead str) return (readMay str)
-  where
-    handleFailedRead str =
-        error $ mconcat
-            [ "Failed to read [["
-            , str
-            , "]] for environment variable "
-            , env
-            ]
-
-
+doMigrations :: SqlPersistT IO ()
+doMigrations = do
+    printMigration migrateAll
+    runMigration migrateAll

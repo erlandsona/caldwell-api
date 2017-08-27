@@ -4,6 +4,7 @@ module Styles exposing (css, css_)
 
 import Css exposing (..)
 import Css.Elements exposing (..)
+import Css.Namespace exposing (namespace)
 import Html exposing (Html, node)
 import String.Extra exposing (clean)
 
@@ -15,12 +16,12 @@ import Lib.CssHelpers exposing (prop)
 import Model exposing (Model)
 import Main.Styles as Main
 import Nav.Styles as Nav
-import Types exposing (Nav(..), Page(..))
+import Types exposing (Nav(..), Page(..), HtmlClass(..))
 
 
 css : Stylesheet
 css =
-    stylesheet <|
+    (stylesheet << namespace homepage) <|
         List.concat
             [ [ html
                     [ height (pct 100)
@@ -58,33 +59,30 @@ css =
                 --     , borderRadius (em 1)
                 --     ]
               , selector container
-                    [ display block
-                    , children
-                        [ selector caldwellBackground
-                            [ backgroundColor black
-                            , backgroundImage (url "/images/stairs.jpg")
-                            , backgroundPosition2 (pct 50) (pct 27)
-                            , backgroundRepeat noRepeat
-                            , backgroundSize cover
-                            , height (vh 100)
-                            , width (vw 100)
-                            , display block
-                            , position fixed
-                            , zIndex (int 0)
-                            , prop "content" "''"
-                            ]
-                        , selector blackOverlay
-                            [ backgroundColor black
-                            , height (vh 100)
-                            , width (vw 100)
-                            , opacity (num 0.7)
-                            , display block
-                            , position fixed
-                            , zIndex (int 0)
-                            , prop "content" "''"
-                            , prop "transition" "opacity 0.7s"
-                            ]
-                        ]
+                    [ display block ]
+              , selector caldwellBackground
+                    [ backgroundColor black
+                    , backgroundImage (url "/images/stairs.jpg")
+                    , backgroundPosition2 (pct 50) (pct 27)
+                    , backgroundRepeat noRepeat
+                    , backgroundSize cover
+                    , height (vh 100)
+                    , width (vw 100)
+                    , display block
+                    , position fixed
+                    , zIndex (int 0)
+                    , prop "content" "''"
+                    ]
+              , selector blackOverlay
+                    [ backgroundColor black
+                    , height (vh 100)
+                    , width (vw 100)
+                    , opacity (num 0.7)
+                    , display block
+                    , position fixed
+                    , zIndex (int 0)
+                    , prop "content" "''"
+                    , prop "transition" "opacity 0.7s"
                     ]
               ]
             , [ header
@@ -132,34 +130,26 @@ styles_ model =
             List.head model.history
     in
         compile
-            [ stylesheet
-                [ nav <|
+            [ (stylesheet << namespace homepage)
+                [ class Navbar <|
                     if navState == Open then
                         [ transform (translate2 zero zero)
                         , transform (translate3d zero zero zero)
                         ]
                     else
                         []
-                , selector container
-                    [ children
-                        [ main_ <|
-                            if navState == Open then
-                                [ opacity (num 0.25)
-                                ]
-                            else
-                                []
+                , class Main <|
+                    if navState == Open then
+                        [ opacity (num 0.25)
                         ]
-                    ]
-                , selector container
-                    [ children
-                        [ selector blackOverlay <|
-                            case currentPage of
-                                Just Home ->
-                                    []
+                    else
+                        []
+                , selector blackOverlay <|
+                    case currentPage of
+                        Just Home ->
+                            []
 
-                                _ ->
-                                    [ opacity (num 0.9) ]
-                        ]
-                    ]
+                        _ ->
+                            [ opacity (num 0.9) ]
                 ]
             ]

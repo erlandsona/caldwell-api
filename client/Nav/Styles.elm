@@ -10,11 +10,12 @@ import Lib.CssHelpers exposing (prop)
 -- Source
 
 import Constants exposing (..)
+import Types exposing (..)
 
 
 css : List Snippet
 css =
-    [ nav
+    [ class Navbar
         [ displayFlex
         , flexDirection column
         , prop "justify-content" "space-around"

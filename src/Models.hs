@@ -4,15 +4,19 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Database where
+module Models where
 
+
+import Data.Aeson
 import Data.Text
 import Data.Time (UTCTime)
 import Database.Persist.Sql
 import Database.Persist.TH
+import Elm
 import GHC.Generics
 
 -- DB Models
@@ -24,11 +28,31 @@ Account
     UniqueEmail email
     deriving Show Generic
 
-Venue json
+Gig
     date UTCTime
-    location Text
+    venue Text
+    -- venueId VenueId
     deriving Show Generic
+
+-- Venue json
+--     name Text
+--     -- locationId LocationId
+--     deriving Show
+
+-- Location json
+--     -- Consider adding for Maps or something.
+--     -- Maybe needs it's own model like Location
+--     street Text
+--     city Text
+--     state Text
+--     zip Integer
+--     deriving Show
 |]
 
-doMigrations :: SqlPersistT IO ()
-doMigrations = runMigration migrateAll
+instance ElmType Account
+instance ToJSON Account
+instance FromJSON Account
+
+instance ElmType Gig
+instance ToJSON Gig
+instance FromJSON Gig

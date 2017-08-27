@@ -20,7 +20,7 @@ Clients must supply the following data
 
 - No response body
 
-## GET /api/shows
+## GET /v1/accounts
 
 #### Authentication
 
@@ -47,28 +47,28 @@ Clients must supply the following data
 - 
 
 ```javascript
-[{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1}]
+[{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"}]
 ```
 
 - 
 
 ```javascript
-[{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1},{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1}]
+[{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"}]
 ```
 
 - 
 
 ```javascript
-[{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1},{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1},{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1}]
+[{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"}]
 ```
 
 - 
 
 ```javascript
-[{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1},{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1},{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1},{"location":"Somthing","date":"2017-07-21T00:00:00Z","id":1}]
+[{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"}]
 ```
 
-## GET /api/users
+## GET /v1/shows
 
 #### Authentication
 
@@ -95,24 +95,24 @@ Clients must supply the following data
 - 
 
 ```javascript
-[{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1}]
+[{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"}]
 ```
 
 - 
 
 ```javascript
-[{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1},{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1}]
+[{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"}]
 ```
 
 - 
 
 ```javascript
-[{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1},{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1},{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1}]
+[{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"}]
 ```
 
 - 
 
 ```javascript
-[{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1},{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1},{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1},{"email":"austin@erlandson.com","lastName":"Erlandson","firstName":"Austin","id":1}]
+[{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"}]
 ```
 
