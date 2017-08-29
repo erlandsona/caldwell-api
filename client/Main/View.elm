@@ -2,6 +2,7 @@ module Main.View exposing (template)
 
 -- Libraries
 
+import Css exposing (Mixin, num, opacity)
 import Date exposing (Date, day, month)
 import Date.Extra.Config.Config_en_us as C_en_us
 import Date.Extra.Format exposing (format)
@@ -16,11 +17,7 @@ import Html.CssHelpers exposing (withNamespace)
 -- Source
 
 import Bio.View as Bio
-import Constants
-    exposing
-        ( caldwellCalendar
-        , homepage
-        )
+import Constants exposing (..)
 import Server exposing (Gig)
 import Types exposing (..)
 
@@ -29,18 +26,28 @@ import Types exposing (..)
     withNamespace homepage
 
 
-template : List Gig -> Html Msg
-template gigs =
-    main_ [ class [ Main ] ]
-        [ section [ id Home ]
+template : Nav -> List Gig -> Html Action
+template navState gigs =
+    main_
+        [ styles
+            (case navState of
+                Open ->
+                    [ opacity (num 0.25) ]
+
+                _ ->
+                    []
+            )
+        , class [ Main () ]
+        ]
+        [ section [ class [ Section, Main Home ] ]
             [ socialLink "facebook" "CaldwellBand" Social.facebook_square
             , socialLink "twitter" "caldwell_band" Social.twitter_square
             , socialLink "instagram" "caldwell_band" Social.instagram
             , socialLink "reverbnation" "caldwellband" Icon.star
             ]
-        , section [ id About ] Bio.template
-        , section [ id Shows ] [ caldwellCalendar_ gigs ]
-        , section [ id Music ]
+        , section [ class [ Section, Main About ] ] Bio.template
+        , section [ class [ Section, Main Shows ] ] [ caldwellCalendar_ gigs ]
+        , section [ class [ Section, Main Music ] ]
             [ h2 [] [ text (toString Music) ]
             , fadingHr
             , iframe
@@ -61,7 +68,7 @@ template gigs =
                 ]
                 []
             ]
-        , section [ id Contact ]
+        , section [ class [ Section, Main Contact ] ]
             [ h2 [] [ text (toString Contact) ]
             , fadingHr
             , a [ href "mailto:booking@caldwell.band" ] [ text "booking@caldwell.band" ]
@@ -119,7 +126,8 @@ fadingHr =
 socialLink : String -> String -> Html a -> Html a
 socialLink siteDomain userName icon =
     a
-        [ href <| "https://www." ++ siteDomain ++ ".com/" ++ userName
+        [ class [ Main "socialLink" ]
+        , href <| "https://www." ++ siteDomain ++ ".com/" ++ userName
         , target "_blank"
         , rel "noopener"
         ]

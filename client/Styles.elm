@@ -1,4 +1,4 @@
-module Styles exposing (css, css_)
+module Styles exposing (css)
 
 -- Libraries
 
@@ -16,7 +16,7 @@ import Lib.CssHelpers exposing (prop)
 import Model exposing (Model)
 import Main.Styles as Main
 import Nav.Styles as Nav
-import Types exposing (Nav(..), Page(..), HtmlClass(..))
+import Types exposing (..)
 
 
 css : Stylesheet
@@ -112,44 +112,4 @@ css =
               ]
             , Nav.css
             , Main.css
-            ]
-
-
-css_ : Model -> Html a
-css_ model =
-    node "style" [] [ Html.text (clean (styles_ model).css) ]
-
-
-styles_ : Model -> { css : String, warnings : List String }
-styles_ model =
-    let
-        navState =
-            model.nav
-
-        currentPage =
-            List.head model.history
-    in
-        compile
-            [ (stylesheet << namespace homepage)
-                [ class Navbar <|
-                    if navState == Open then
-                        [ transform (translate2 zero zero)
-                        , transform (translate3d zero zero zero)
-                        ]
-                    else
-                        []
-                , class Main <|
-                    if navState == Open then
-                        [ opacity (num 0.25)
-                        ]
-                    else
-                        []
-                , selector blackOverlay <|
-                    case currentPage of
-                        Just Home ->
-                            []
-
-                        _ ->
-                            [ opacity (num 0.9) ]
-                ]
             ]

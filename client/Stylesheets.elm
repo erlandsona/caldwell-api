@@ -6,7 +6,7 @@ import Lib.Normalize as Normalized
 import Styles
 
 
-port files : CssFileStructure -> Cmd msg
+port files : CssFileStructure -> Cmd action
 
 
 structure : CssFileStructure

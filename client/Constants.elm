@@ -2,7 +2,9 @@ module Constants exposing (..)
 
 -- Libraries
 
-import Css exposing (hex, Color, Rem)
+import Css exposing (Color, Mixin, Rem, hex)
+import Html exposing (Attribute)
+import Html.Attributes
 
 
 -- Paddings / Margins
@@ -74,4 +76,13 @@ container =
 
 homepage : String
 homepage =
-    "homepage-"
+    "homepage_"
+
+
+
+-- Shared Util Functions
+
+
+styles : List Mixin -> Attribute action
+styles =
+    Css.asPairs >> Html.Attributes.style

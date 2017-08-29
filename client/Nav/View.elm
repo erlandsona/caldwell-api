@@ -2,6 +2,7 @@ module Nav.View exposing (template)
 
 -- Libs
 
+import Css exposing (transform, translate2, translate3d, zero)
 import Html exposing (..)
 import Html.CssHelpers exposing (withNamespace)
 import Html.Events exposing (onClick, onWithOptions, Options)
@@ -11,29 +12,40 @@ import Json.Decode exposing (succeed)
 -- Source
 
 import Types exposing (..)
-import Constants exposing (homepage)
+import Constants exposing (..)
 
 
 { class } =
     withNamespace homepage
 
 
-template : Nav -> Html Msg
+template : Nav -> Html Action
 template navState =
-    nav [ class [ Navbar ], clickWithStopProp (Toggle Closed) ]
+    nav
+        [ styles
+            (if navState == Open then
+                [ transform (translate2 zero zero)
+                , transform (translate3d zero zero zero)
+                ]
+             else
+                []
+            )
+        , class [ NavBar () ]
+        , clickWithStopProp (Toggle Closed)
+        ]
         [ aTag Home
         , aTag About
         , aTag Shows
         , aTag Music
         , aTag Contact
-        , ul [ clickWithStopProp (Toggle <| not navState) ]
+        , ul [ class [ NavBar "handle" ], clickWithStopProp (Toggle <| not navState) ]
             [ li [] [] ]
         ]
 
 
-aTag : Page -> Html Msg
+aTag : Page -> Html Action
 aTag page =
-    a [ onClick (SetUrl page) ]
+    a [ class [ (NavBar "a") ], onClick (SetUrl page) ]
         [ span [] [ text (toString page) ]
         ]
 
@@ -48,9 +60,9 @@ not navState =
             Open
 
 
-clickWithStopProp : Msg -> Attribute Msg
-clickWithStopProp msg =
-    onWithOptions "click" (Options True False) (succeed msg)
+clickWithStopProp : Action -> Attribute Action
+clickWithStopProp action =
+    onWithOptions "click" (Options True False) (succeed action)
 
 
 

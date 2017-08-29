@@ -1,11 +1,13 @@
-port module Ports exposing (easeIntoView, snapIntoView)
+port module Ports exposing (..)
+
+import Types exposing (ClassName)
+import Scroll exposing (Move)
 
 
-port easeIntoView : Id -> Cmd msg
+port easeIntoView : ClassName -> Cmd action
 
 
-port snapIntoView : Id -> Cmd msg
+port snapIntoView : ClassName -> Cmd action
 
 
-type alias Id =
-    String
+port scroll : (Move -> action) -> Sub action

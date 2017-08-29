@@ -2,54 +2,34 @@ module Site exposing (main)
 
 -- Libs
 
+import Scroll
+import Css exposing (num, opacity)
+import Css.Helpers
 import Debug
 import Date exposing (Date)
-
-
--- import Date.Extra.Duration exposing (add, Duration(..))
-
 import Date.Extra.Compare exposing (is, Compare2(..))
 import Http
-import Html exposing (Html, Attribute, header, node, span, text)
+import Html exposing (Html, header, node, span, text)
 import Html.Events exposing (onClick)
 import Html.CssHelpers exposing (withNamespace)
-
-
--- import Json.Decode.Pipeline exposing (decode, required)
-
 import Json.Decode exposing (decodeValue, int, keyValuePairs, maybe, string)
-
-
--- import Json.Decode.Extra exposing (date)
-
 import Json.Encode exposing (Value)
 import Maybe exposing (withDefault)
 import Maybe.Extra exposing (unpack)
 import Navigation as Nav exposing (programWithFlags, Location)
 import String exposing (toLower)
-
-
--- import Task exposing (perform)
-
 import Time exposing (Time)
 import UrlParser as Url exposing (oneOf, s)
 
 
 -- Modules
 
-import Constants
-    exposing
-        ( blackOverlay
-        , caldwellBackground
-        , container
-        , homepage
-        )
+import Constants exposing (..)
 import Main.View as Main
 import Nav.View as Nav
 import Model exposing (Model)
-import Ports exposing (easeIntoView, snapIntoView)
+import Ports exposing (..)
 import Server exposing (Gig, getV1Shows, decodeGig)
-import Styles as Styles
 import Types exposing (..)
 
 
@@ -76,7 +56,7 @@ decodeLocalStorageGigs today json =
         unpack (\() -> Debug.log "No shows in local storage." []) decodedGigs json
 
 
-init : Initializer -> Location -> ( Model, Cmd Msg )
+init : Initializer -> Location -> ( Model, Cmd Action )
 init { cachedGigs, now } location =
     let
         today =
@@ -92,12 +72,19 @@ init { cachedGigs, now } location =
             }
     in
         model
-            ! [ location
-                    |> parse
-                    |> toString
-                    |> snapIntoView
+            ! [ locationToScroll location snapIntoView
               , Http.send ShowResponse getV1Shows
               ]
+
+
+locationToScroll : Location -> (String -> Cmd action) -> Cmd action
+locationToScroll location scrollFunction =
+    location
+        |> parse
+        |> Main
+        |> Css.Helpers.identifierToString homepage
+        |> (++) "."
+        |> scrollFunction
 
 
 parse : Location -> Page
@@ -119,32 +106,36 @@ urlParser =
     withNamespace homepage
 
 
-view : Model -> Html Msg
+view : Model -> Html Action
 view model =
     node container
         [ onClick (Toggle Closed)
         ]
-        [ Styles.css_ model
-        , node caldwellBackground [] []
-        , node blackOverlay [] []
+        [ node caldwellBackground [] []
+        , node blackOverlay
+            (case List.head model.history of
+                Just Home ->
+                    []
+
+                _ ->
+                    [ styles [ opacity (num 0.9) ] ]
+            )
+            []
         , header [ onClick (SetUrl Home) ]
             [ span [] [ text "C" ]
             , text "aldwell"
             ]
         , Nav.template model.nav
-        , Main.template model.shows
+        , Main.template model.nav model.shows
         ]
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
+update : Action -> Model -> ( Model, Cmd Action )
+update action model =
+    case action of
         GoToPage location ->
             { model | history = (::) (parse location) model.history }
-                ! [ location
-                        |> parse
-                        |> toString
-                        |> easeIntoView
+                ! [ locationToScroll location easeIntoView
                   ]
 
         SetUrl url ->
@@ -175,12 +166,43 @@ update msg model =
                     in
                         model ! []
 
+        Darken ->
+            { model | history = (::) About model.history } ! []
 
-main : Program Initializer Model Msg
+        Brighten ->
+            { model | history = (::) Home model.history } ! []
+
+        Header move ->
+            Scroll.handle
+                -- when scrollTop > 10px, send Darken message
+                [ Scroll.onCrossDown 300 <| update Darken
+                  -- when scrollTop < 10px, send Brighten message
+                , Scroll.onCrossUp 300 <| update Brighten
+                ]
+                move
+                model
+
+
+
+-- Animate animationAction ->
+--     -- here you can apply new styles, to be animated
+--     --- ...
+--     model ! []
+
+
+main : Program Initializer Model Action
 main =
     programWithFlags GoToPage
         { init = init
         , view = view
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
+
+
+subscriptions : Model -> Sub Action
+subscriptions model =
+    Sub.batch
+        [ scroll Header
+          -- , Animation.subscription Animate [ model.style ]
+        ]
