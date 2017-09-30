@@ -66,7 +66,7 @@ allGigs = do
     return $ entityVal <$> dbGigs
 
 files :: Application
-files = serveDirectory "public"
+files = serveDirectory "static"
 
 
 

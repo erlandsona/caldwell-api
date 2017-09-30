@@ -32,7 +32,6 @@ encodeAccount x =
         , ( "accountEmail", Json.Encode.string x.accountEmail )
         ]
 
-
 type alias Gig =
     { gigDate : Date
     , gigVenue : String
@@ -53,8 +52,7 @@ encodeGig x =
         , ( "gigVenue", Json.Encode.string x.gigVenue )
         ]
 
-
-getV1Accounts : Http.Request (List Account)
+getV1Accounts : Http.Request (List (Account))
 getV1Accounts =
     Http.request
         { method =
@@ -77,8 +75,7 @@ getV1Accounts =
             False
         }
 
-
-getV1Shows : Http.Request (List Gig)
+getV1Shows : Http.Request (List (Gig))
 getV1Shows =
     Http.request
         { method =

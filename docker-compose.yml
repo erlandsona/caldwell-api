@@ -1,20 +1,26 @@
 version: '3'
 
 services:
-
-  caldwell-api:
-    build: .
-    image: caldwell-api
-    command: caldwell-api
-    expose:
-      - "1234"
-    volumes:
-      - .:/app
-
-  nginx:
+  server:
     build: ./nginx
     image: nginx
     ports:
-      - "8080:80"
+      - '8080:80'
     depends_on:
-      - caldwell-api
+      - app
+
+  app:
+    build: .
+    command: caldwell
+    expose:
+      - '1234'
+    image: caldwell
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    ports:
+      - '5432:5432'

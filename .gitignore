@@ -27,7 +27,7 @@ repl-temp-*
 _main.js
 node_modules
 runner.sh
-public/
+static/
 npm-debug.log
 Session.vim
 app/Client/Generated.elm

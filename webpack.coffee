@@ -7,7 +7,7 @@ ExtractTextPlugin = require 'extract-text-webpack-plugin'
 CopyWebpackPlugin = require 'copy-webpack-plugin'
 
 entryFile = path.resolve __dirname, 'client/index.coffee'
-outputPath = path.resolve __dirname, 'public'
+outputPath = path.resolve __dirname, 'static'
 
 # determine build env
 TARGET_ENV = if process.env.npm_lifecycle_event is 'build' then 'production' else 'development'

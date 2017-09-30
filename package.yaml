@@ -57,14 +57,14 @@ library:
       else:
         ghc-options:
         - -Wall
-        - -fwarn-tabs
         - -Werror
+        - -fwarn-tabs
         - -O2
 
 executables:
   caldwell: &defaults
     main: Main.hs
-    source-dirs: apps/server
+    source-dirs: server
     ghc-options:
       - -Wall
       - -Werror
@@ -79,11 +79,11 @@ executables:
   docs:
     <<: *defaults
     main: Main.hs
-    source-dirs: apps/documentation
+    source-dirs: documentation
   elm-code:
     <<: *defaults
     main: Main.hs
-    source-dirs: apps/elm-code
+    source-dirs: elm-code
   seed:
     <<: *defaults
     main: Seeds.hs
