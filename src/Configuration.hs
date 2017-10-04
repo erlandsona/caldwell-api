@@ -3,7 +3,6 @@
 
 module Configuration where
 
-import Control.Exception (throwIO)
 import Control.Monad.Except (ExceptT, MonadError)
 import Control.Monad.Logger (runNoLoggingT, runStdoutLoggingT)
 import Control.Monad.Reader
@@ -13,12 +12,12 @@ import Control.Monad.Reader
     , asks
     , liftIO
     )
-import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
 import qualified Data.ByteString.Char8 as BS
+import Data.List (intercalate)
+import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Database.Persist.Postgresql
     ( ConnectionPool
-    , ConnectionString
     , SqlPersistT
     , createPostgresqlPool
     , runSqlPool
@@ -76,52 +75,39 @@ setLogger Production = logStdout
 -- information from environment variables that are set by the keter
 -- deployment application.
 makePool :: Environment -> IO ConnectionPool
-makePool Test =
-    runNoLoggingT (createPostgresqlPool (connStr "_test") (envPool Test))
-makePool Development =
-    runStdoutLoggingT (createPostgresqlPool (connStr "") (envPool Development))
-makePool Production = do
-    -- This function makes heavy use of the 'MaybeT' monad transformer, which
-    -- might be confusing if you're not familiar with it. It allows us to
-    -- combine the effects from 'IO' and the effect of 'Maybe' into a single
-    -- "big effect", so that when we bind out of @MaybeT IO a@, we get an
-    -- @a@. If we just had @IO (Maybe a)@, then binding out of the IO would
-    -- give us a @Maybe a@, which would make the code quite a bit more
-    -- verbose.
-    pool <- runMaybeT $ do
-        let keys = [ "host="
-                   , "port="
-                   , "user="
-                   , "password="
-                   , "dbname="
-                   ]
-            envs = [ "PGHOST"
-                   , "PGPORT"
-                   , "PGUSER"
-                   , "PGPASS"
-                   , "PGDATABASE"
-                   ]
-        envVars <- traverse (MaybeT . lookupEnv) envs
-        let prodStr = mconcat . zipWith (<>) keys $ BS.pack <$> envVars
-        runStdoutLoggingT $ createPostgresqlPool prodStr (envPool Production)
-    case pool of
-        -- If we don't have a correct database configuration, we can't
-        -- handle that in the program, so we throw an IO exception. This is
-        -- one example where using an exception is preferable to 'Maybe' or
-        -- 'Either'.
-         Nothing -> throwIO (userError "Database Configuration not present in environment.")
-         Just a -> return a
+makePool env = do
+    let keys = ["host=", "port=", "user=", "password=", "dbname="]
+        envs = ["DATABASE_URL", "DB_PORT", "DB_USERNAME", "DB_PASSWORD", "DB_NAME"]
+        defaults =
+            ["localhost" , "5432", "postgres", ""
+            , "caldwell" <> case env of
+                Test -> "_test"
+                Development -> "_development"
+                Production -> "_production"
+            ]
+    pool <- do
+        envVars <- traverse lookupEnv envs
+        let dbConnectionString = BS.pack . intercalate " " $ zip3WithDefaults keys defaults envVars
+        case env of
+            Production ->
+                runStdoutLoggingT $ createPostgresqlPool dbConnectionString (envPool Production)
+
+            Development ->
+                runStdoutLoggingT $ createPostgresqlPool dbConnectionString (envPool Development)
+
+            Test ->
+                runNoLoggingT $ createPostgresqlPool dbConnectionString (envPool Test)
+
+    return pool
+
+zip3WithDefaults :: [String] -> [String] -> [Maybe String] -> [String]
+zip3WithDefaults = zipWith3 $ \key def envVar -> key <> fromMaybe def envVar
 
 -- | The number of pools to use for a given environment.
 envPool :: Environment -> Int
 envPool Test = 1
 envPool Development = 1
 envPool Production = 8
-
--- | A basic 'ConnectionString' for local/test development. Pass in either
--- @""@ for 'Development' or @"test"@ for 'Test'.
-connStr :: BS.ByteString -> ConnectionString
-connStr sfx = "host=localhost dbname=caldwell" <> sfx <> " user=erlandsona port=5432"
 
 runDb :: (MonadReader Settings m, MonadIO m) => SqlPersistT IO b -> m b
 runDb query = do

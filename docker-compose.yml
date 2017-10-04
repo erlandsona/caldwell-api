@@ -5,15 +5,17 @@ services:
     build: ./nginx
     image: nginx
     ports:
-      - '8080:80'
+      - '3737:80'
     depends_on:
       - app
 
   app:
     build: .
     command: caldwell
+    environment:
+      DATABASE_URL: db
     expose:
-      - '1234'
+      - '3737'
     image: caldwell
     volumes:
       - .:/app
@@ -22,5 +24,9 @@ services:
 
   db:
     image: postgres
-    ports:
-      - '5432:5432'
+    # For linking services.
+    expose:
+      - '5432'
+    # For exposing to host machine.
+    # ports:
+    #   - 'host:5432'

@@ -1,0 +1,18 @@
+# Files to not send to docker in the COPY or ADD commands.
+
+# docker files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# git commits
+.git/
+
+# stack build directory
+.stack-work/
+
+# # Elm build directory
+# elm-stuff/
+#
+# # Node Deps?
+# node_modules/
