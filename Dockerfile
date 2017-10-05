@@ -18,9 +18,17 @@ RUN rm -rf /var/lib/apt/lists/*
 
 ########################
 # Project Deps
-
 RUN mkdir -p /app
 WORKDIR /app
-COPY . $WORKDIR
+
+# Install all dependencies in app's .cabal file.
+COPY ./package.yaml $WORKDIR
+COPY ./stack.yaml $WORKDIR
 RUN stack build --dependencies-only
+
+COPY . $WORKDIR
 RUN stack install
+
+RUN docs
+RUN elm-code
+CMD caldwell

@@ -18,6 +18,7 @@ import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Database.Persist.Postgresql
     ( ConnectionPool
+    , ConnectionString
     , SqlPersistT
     , createPostgresqlPool
     , runSqlPool
@@ -85,20 +86,24 @@ makePool env = do
                 Development -> "_development"
                 Production -> "_production"
             ]
-    pool <- do
-        envVars <- traverse lookupEnv envs
-        let dbConnectionString = BS.pack . intercalate " " $ zip3WithDefaults keys defaults envVars
-        case env of
-            Production ->
-                runStdoutLoggingT $ createPostgresqlPool dbConnectionString (envPool Production)
+    envVars <- traverse lookupEnv envs
+    -- let dbConnection :: Environment -> LoggingT IO ConnectionPool
+    let makeConnStr :: ConnectionString
+        makeConnStr = BS.pack . intercalate " " $ zip3WithDefaults keys defaults envVars
 
-            Development ->
-                runStdoutLoggingT $ createPostgresqlPool dbConnectionString (envPool Development)
+    let dbConnection :: IO ConnectionPool
+        dbConnection =
+            case env of
+                Production ->
+                    runStdoutLoggingT $ createPostgresqlPool makeConnStr $ envPool Production
 
-            Test ->
-                runNoLoggingT $ createPostgresqlPool dbConnectionString (envPool Test)
+                Development ->
+                    runStdoutLoggingT $ createPostgresqlPool makeConnStr $ envPool Development
 
-    return pool
+                Test ->
+                    runNoLoggingT $ createPostgresqlPool makeConnStr $ envPool Test
+
+    return =<< dbConnection
 
 zip3WithDefaults :: [String] -> [String] -> [Maybe String] -> [String]
 zip3WithDefaults = zipWith3 $ \key def envVar -> key <> fromMaybe def envVar
