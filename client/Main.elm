@@ -29,7 +29,7 @@ import Main.View as Main
 import Nav.View as Nav
 import Model exposing (Model)
 import Ports exposing (..)
-import Server exposing (Gig, getV1Shows, decodeGig)
+import Server exposing (Gig, getApiV1Shows, decodeGig)
 import Types exposing (..)
 
 
@@ -42,18 +42,19 @@ type alias Initializer =
     }
 
 
-decodeLocalStorageGigs : Date -> Maybe Value -> List Gig
-decodeLocalStorageGigs today json =
-    let
-        decodedGigs json =
-            case (decodeValue (decodeGig |> keyValuePairs) json) of
-                Ok shows ->
-                    List.map (\( msg, location ) -> (Debug.log msg) location) shows
+decodedGigs : Value -> List Gig
+decodedGigs json =
+    case (decodeValue (decodeGig |> keyValuePairs) json) of
+        Ok shows ->
+            List.map (\( msg, location ) -> (Debug.log msg) location) shows
 
-                Err msg ->
-                    Debug.log msg []
-    in
-        unpack (\() -> Debug.log "No shows in local storage." []) decodedGigs json
+        Err msg ->
+            Debug.log msg []
+
+
+decodeLocalStorageGigs : Maybe Value -> List Gig
+decodeLocalStorageGigs =
+    unpack (\() -> Debug.log "No shows in local storage." []) decodedGigs
 
 
 init : Initializer -> Location -> ( Model, Cmd Action )
@@ -65,15 +66,16 @@ init { cachedGigs, now } location =
         model =
             { history = [ parse location ]
             , nav = Closed
+            , today = today
             , shows =
-                (decodeLocalStorageGigs today cachedGigs)
+                (decodeLocalStorageGigs cachedGigs)
                     |> List.filter (.gigDate >> is SameOrAfter today)
                     |> List.sortBy (Date.toTime << .gigDate)
             }
     in
         model
             ! [ locationToScroll location snapIntoView
-              , Http.send ShowResponse getV1Shows
+              , Http.send ShowResponse getApiV1Shows
               ]
 
 
@@ -157,7 +159,12 @@ update action model =
                         _ =
                             Debug.log "Shows Reponse" <| toString shows
                     in
-                        { model | shows = shows } ! []
+                        { model
+                            | shows =
+                                List.sortBy (Date.toTime << .gigDate) <|
+                                    List.filter (.gigDate >> is SameOrAfter model.today) shows
+                        }
+                            ! []
 
                 Err msg ->
                     let

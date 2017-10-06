@@ -13,7 +13,7 @@ import Models
 
 
 data Routes path = Routes
-    { api :: path :- Api :> Version :> ApiRouter
+    { api :: path :- ApiRouter
     , root :: path :- Raw
     } deriving Generic
 
@@ -25,8 +25,8 @@ type Version = "v1"
 type Api = "api"
 
 data ApiRoutes path = ApiRoutes
-    { accounts :: path :- "accounts" :> Get '[JSON] [Account]
-    , gigs :: path :- "shows" :> Get '[JSON] [Gig]
+    { accounts :: path :- Api :> Version :> "accounts" :> Get '[JSON] [Account]
+    , gigs :: path :- Api :> Version :> "shows" :> Get '[JSON] [Gig]
     } deriving Generic
 
 type ApiRouter = ToServant (ApiRoutes AsApi)

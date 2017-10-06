@@ -9,15 +9,16 @@ import Data.Proxy
 import Data.Text as T
 import Elm
 import Servant.Elm
-    ( ElmOptions(..)
-    , UrlPrefix(Static)
-    , defElmOptions
+    (-- ElmOptions(..)
+    -- , UrlPrefix(Static)
+      defElmOptions
     , generateElmForAPIWith
     )
 
 -- Source
-import Routes
+-- import Configuration
 import Models
+import Routes
 
 main :: IO ()
 main = do
@@ -26,20 +27,28 @@ main = do
     --     , std_out = CreatePipe
     --     }
     -- let formattedSpec = elmFormat $ T.unlines elmText
+
+    -- env <- lookupSetting "ENV" Development
+
+    -- let options :: ElmOptions
+    --     options =
+    --         if Development == env
+    --         then defElmOptions { urlPrefix = Static "http://localhost:3737" }
+    --         else defElmOptions
+
+    let elmText :: [Text]
+        elmText =
+            ( defElmImports
+            : mkElmTypeD'Encoders (Proxy :: Proxy Account)
+            : mkElmTypeD'Encoders (Proxy :: Proxy Gig)
+            : generateElmForAPIWith defElmOptions (Proxy :: Proxy ApiRouter)
+            )
+
+    let spec :: Spec
+        spec = Spec ["Server"] elmText
+
     specsToDir [spec] "client"
 
-
-
-spec :: Spec
-spec = Spec ["Server"] elmText
-
-elmText :: [Text]
-elmText =
-    ( defElmImports
-    : mkElmTypeD'Encoders (Proxy :: Proxy Account)
-    : mkElmTypeD'Encoders (Proxy :: Proxy Gig)
-    : generateElmForAPIWith options (Proxy :: Proxy ApiRouter)
-    )
 
 
 mkElmTypeD'Encoders :: ElmType a => a -> Text
@@ -49,10 +58,6 @@ mkElmTypeD'Encoders a = T.intercalate "\n\n\n"
     , toElmEncoderSource a
     ]
 
-
-options :: ElmOptions
-options = defElmOptions
-    { urlPrefix = Static "http://localhost:3737" }
 
 defElmImports :: Text
 defElmImports =

@@ -3,6 +3,7 @@
 
 module Configuration where
 
+import Control.Exception (throwIO)
 import Control.Monad.Except (ExceptT, MonadError)
 import Control.Monad.Logger (runNoLoggingT, runStdoutLoggingT)
 import Control.Monad.Reader
@@ -12,6 +13,7 @@ import Control.Monad.Reader
     , asks
     , liftIO
     )
+import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
 import qualified Data.ByteString.Char8 as BS
 import Data.List (intercalate)
 import Data.Maybe (fromMaybe)
@@ -77,33 +79,36 @@ setLogger Production = logStdout
 -- deployment application.
 makePool :: Environment -> IO ConnectionPool
 makePool env = do
-    let keys = ["host=", "port=", "user=", "password=", "dbname="]
-        envs = ["DATABASE_URL", "DB_PORT", "DB_USERNAME", "DB_PASSWORD", "DB_NAME"]
+    let keys = ["host=", "dbname=", "user=", "password=", "port="]
+        envs = ["DB_HOST", "DB_NAME", "DB_USERNAME", "DB_PASSWORD", "DB_PORT"]
         defaults =
-            ["localhost" , "5432", "postgres", ""
-            , "caldwell" <> case env of
-                Test -> "_test"
-                Development -> "_development"
-                Production -> "_production"
+            [ "localhost"
+            , "caldwell" <>
+                if env == Test
+                then "_test"
+                else "_development"
+            , "erlandsona", "", "5432"
             ]
     envVars <- traverse lookupEnv envs
+
     -- let dbConnection :: Environment -> LoggingT IO ConnectionPool
     let makeConnStr :: ConnectionString
         makeConnStr = BS.pack . intercalate " " $ zip3WithDefaults keys defaults envVars
 
-    let dbConnection :: IO ConnectionPool
-        dbConnection =
-            case env of
-                Production ->
-                    runStdoutLoggingT $ createPostgresqlPool makeConnStr $ envPool Production
+    case env of
+        Production -> do
+            pool <- runMaybeT $ do
+                prodStr <- MaybeT . lookupEnv $ "DATABASE_URL"
+                runStdoutLoggingT $ createPostgresqlPool (BS.pack prodStr) (envPool Production)
 
-                Development ->
-                    runStdoutLoggingT $ createPostgresqlPool makeConnStr $ envPool Development
+            case pool of
+                Just a -> return a
+                Nothing -> throwIO (userError "Database Configuration not present in environment.")
+        Development ->
+            return =<< runStdoutLoggingT $ createPostgresqlPool makeConnStr (envPool Development)
 
-                Test ->
-                    runNoLoggingT $ createPostgresqlPool makeConnStr $ envPool Test
-
-    return =<< dbConnection
+        Test ->
+            return =<< runNoLoggingT $ createPostgresqlPool makeConnStr (envPool Test)
 
 zip3WithDefaults :: [String] -> [String] -> [Maybe String] -> [String]
 zip3WithDefaults = zipWith3 $ \key def envVar -> key <> fromMaybe def envVar
@@ -129,11 +134,11 @@ lookupSetting env def = do
             return def
         Just str ->
             maybe (handleFailedRead str) return (readMay str)
-  where
-    handleFailedRead str =
-        error $ mconcat
-            [ "Failed to read [["
-            , str
-            , "]] for environment variable "
-            , env
-            ]
+    where
+        handleFailedRead str =
+            error $ mconcat
+                [ "Failed to read [["
+                , str
+                , "]] for environment variable "
+                , env
+                ]

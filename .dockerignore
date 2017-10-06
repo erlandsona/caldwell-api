@@ -7,12 +7,17 @@ docker-compose.yml
 
 # git commits
 .git/
+.gitignore
 
 # stack build directory
 .stack-work/
 
 # # Elm build directory
-# elm-stuff/
+elm-stuff/
 #
 # # Node Deps?
-# node_modules/
+node_modules/
+
+scripts/
+
+tags

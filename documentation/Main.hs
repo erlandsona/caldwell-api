@@ -37,7 +37,7 @@ instance ToSample Account where
 
 
 instance ToSample Gig where
-    toSamples _ = singleSample $ Gig (UTCTime (fromGregorian 2017 7 21) (secondsToDiffTime 0)) "Somthing"
+    toSamples _ = singleSample $ Gig (UTCTime (fromGregorian 2017 7 21) (secondsToDiffTime 0)) "A Place in Nashville"
 
 
 main :: IO ()

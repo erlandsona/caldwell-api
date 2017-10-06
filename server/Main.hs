@@ -25,35 +25,47 @@ import Configuration
 import Models
 import Routes
 
+main :: IO ()
+main = do
+    env  <- lookupSetting "ENV" Development
+    port <- lookupSetting "PORT" 3737
+    pool <- makePool env
+    let settings = Settings { getPool = pool, getEnv = env }
+        logger = setLogger env
+    runSqlPool doMigrations pool
+    putStrLn $ "Serving on PORT: " ++ show port
 
-app :: Settings -> Application
-app settings = corsWithContentType $
-    serve (Proxy :: Proxy Router) $ toServant (server settings)
-    where
-        corsWithContentType :: Middleware
-        corsWithContentType = cors (const $ Just policy)
+    let convertApp :: App :~> ExceptT ServantErr IO
+        convertApp = Nat (flip runReaderT settings . runApp)
+
+    let apiServer :: ApiRoutes AsServer
+        apiServer = ApiRoutes
+            { accounts = enter convertApp allAccounts
+            , gigs = enter convertApp allGigs
+            }
+
+    let server :: Routes AsServer
+        server = Routes
+            { api = toServant apiServer
+            , root = files
+            }
+
+    let app :: Application
+        app = corsWithContentType $
+            serve (Proxy :: Proxy Router) $ toServant server
             where
-              policy = simpleCorsResourcePolicy
-                { corsRequestHeaders =
-                    [ "Content-Type"
-                    , "Access-Control-Allow-Origin"
-                    ]
-                }
+                corsWithContentType :: Middleware
+                corsWithContentType = cors (const $ Just policy)
+                    where
+                    policy = simpleCorsResourcePolicy
+                        { corsRequestHeaders =
+                            [ "Content-Type"
+                            , "Access-Control-Allow-Origin"
+                            ]
+                        }
 
-convertApp :: Settings -> App :~> ExceptT ServantErr IO
-convertApp settings = Nat (flip runReaderT settings . runApp)
+    run port $ logger $ app
 
-server :: Settings -> Routes AsServer
-server settings = Routes
-    { api = toServant (apiServer settings)
-    , root = files
-    }
-
-apiServer :: Settings -> ApiRoutes AsServer
-apiServer settings = ApiRoutes
-    { accounts = enter (convertApp settings) allAccounts
-    , gigs = enter (convertApp settings) allGigs
-    }
 
 allAccounts :: App [Account]
 allAccounts = do
@@ -67,19 +79,6 @@ allGigs = do
 
 files :: Application
 files = serveDirectory "static"
-
-
-
-main :: IO ()
-main = do
-    env  <- lookupSetting "ENV" Development
-    port <- lookupSetting "PORT" 3737
-    pool <- makePool env
-    let settings = Settings { getPool = pool, getEnv = env }
-        logger = setLogger env
-    runSqlPool doMigrations pool
-    putStrLn $ "Serving on PORT: " ++ show port
-    run port $ logger $ app settings
 
 doMigrations :: SqlPersistT IO ()
 doMigrations = do

@@ -52,8 +52,8 @@ encodeGig x =
         , ( "gigVenue", Json.Encode.string x.gigVenue )
         ]
 
-getV1Accounts : Http.Request (List (Account))
-getV1Accounts =
+getApiV1Accounts : Http.Request (List (Account))
+getApiV1Accounts =
     Http.request
         { method =
             "GET"
@@ -61,7 +61,8 @@ getV1Accounts =
             []
         , url =
             String.join "/"
-                [ "http://localhost:3737"
+                [ ""
+                , "api"
                 , "v1"
                 , "accounts"
                 ]
@@ -75,8 +76,8 @@ getV1Accounts =
             False
         }
 
-getV1Shows : Http.Request (List (Gig))
-getV1Shows =
+getApiV1Shows : Http.Request (List (Gig))
+getApiV1Shows =
     Http.request
         { method =
             "GET"
@@ -84,7 +85,8 @@ getV1Shows =
             []
         , url =
             String.join "/"
-                [ "http://localhost:3737"
+                [ ""
+                , "api"
                 , "v1"
                 , "shows"
                 ]

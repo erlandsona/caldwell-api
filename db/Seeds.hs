@@ -12,13 +12,30 @@ accounts =
 
 gigs :: [Gig]
 gigs =
-    [ Gig (UTCTime (fromGregorian 2017 7 21) offset) "Belcourt Taps"
-    , Gig (UTCTime (fromGregorian 2017 7 22) offset) "Bridge Bar"
+    -- Times in Military because UTC
+    [ Gig (date "2017-04-15 19:00") "Belcourt Taps"
+    , Gig (date "2017-04-26 19:00") "SLOCO"
+    , Gig (date "2017-05-03 18:00") "Blue Moon Waterfront Grille"
+    , Gig (date "2017-05-08 21:00") "The Commodore"
+    , Gig (date "2017-05-28 19:00") "The Commodore"
+    , Gig (date "2017-06-07 18:00") "Tavern 96"
+    , Gig (date "2017-06-13 15:00") "12th South Farmers Market"
+    , Gig (date "2017-06-17 14:00") "Natchez Hills Winery"
+    , Gig (date "2017-06-20 21:40") "Bridge Bar"
+    , Gig (date "2017-07-11 18:00") "Artist Round @ Commodore Grille"
+    , Gig (date "2017-07-25 16:30") "12th South Farmers Market"
+    , Gig (date "2017-07-26 15:30") "East Nashville Farmers Market"
+    , Gig (date "2017-07-29 09:30") "Richland Park Farmers Market"
+    , Gig (date "2017-08-27 14:00") "Natchez Hills Winery"
+    , Gig (date "2017-09-05 20:00") "Bridge Bar"
+    , Gig (date "2017-09-17 14:00") "Natchez Hills Winery"
+    , Gig (date "2017-10-06 21:00") "SomeWhere SOS"
+    , Gig (date "2017-10-17 19:00") "SOUTH"
+    , Gig (date "2017-11-07 20:30") "Bridge Bar"
     ]
 
-    where
-        offset = secondsToDiffTime $ cst * 60 * 60
-        cst = 5
+date :: String -> UTCTime
+date str = zonedTimeToUTC ((read (str ++ ":00")) :: ZonedTime)
 
 main :: IO ()
 main = do
