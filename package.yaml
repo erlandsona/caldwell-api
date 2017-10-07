@@ -16,6 +16,7 @@ dependencies:
   - bytestring
   - elm-export
   - elm-export-persistent
+  - filepath
   - monad-logger
   - mtl
   - persistent
@@ -33,6 +34,7 @@ dependencies:
   - transformers
   - turtle
   - wai
+  - wai-app-static
   - wai-cors
   - wai-extra
   - warp

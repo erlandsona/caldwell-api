@@ -1,15 +1,15 @@
 version: '3'
 
 services:
-  server:
+  nginx:
     build: ./nginx
     image: nginx
     ports:
       - '80:80'
     depends_on:
-      - app
+      - web
 
-  app:
+  web:
     build: .
     command: caldwell
     environment:

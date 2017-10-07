@@ -3,14 +3,13 @@
 {-# LANGUAGE TemplateHaskell   #-}
 {-# LANGUAGE TypeOperators     #-}
 
-module Main where
-
 -- Libs
 import Control.Monad.Except
 import Control.Monad.Reader (runReaderT)
 import Database.Persist.Sql
 import Database.Persist.Postgresql (runSqlPool)
 import Network.Wai
+import Network.Wai.Application.Static
 import Network.Wai.Handler.Warp (run)
 import Network.Wai.Middleware.Cors
     ( cors
@@ -19,6 +18,8 @@ import Network.Wai.Middleware.Cors
     )
 import Servant
 import Servant.Generic
+import System.FilePath
+import WaiAppStatic.Types
 
 -- Source
 import Configuration
@@ -78,7 +79,19 @@ allGigs = do
     return $ entityVal <$> dbGigs
 
 files :: Application
-files = serveDirectory "static"
+files = serveDirectoryWithFallback "static"
+
+serveDirectoryWithFallback :: FilePath -> Application
+serveDirectoryWithFallback rootFilePath =
+  let root' = addTrailingPathSeparator rootFilePath in
+  staticApp $ (defaultFileServerSettings root') { ssLookupFile = fileOrIndex root' }
+
+fileOrIndex :: FilePath -> Pieces -> IO LookupResult
+fileOrIndex rootFilePath pieces = do
+  res <- ssLookupFile (defaultFileServerSettings rootFilePath) pieces
+  case res of
+    LRNotFound -> undefined -- index.html here
+    _ -> return res
 
 doMigrations :: SqlPersistT IO ()
 doMigrations = do

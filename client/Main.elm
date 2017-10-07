@@ -57,6 +57,12 @@ decodeLocalStorageGigs =
     unpack (\() -> Debug.log "No shows in local storage." []) decodedGigs
 
 
+filterAndSort : Date -> List Gig -> List Gig
+filterAndSort today =
+    List.filter (.gigDate >> flip (is SameOrAfter) today)
+        >> List.sortBy (.gigDate >> Date.toTime)
+
+
 init : Initializer -> Location -> ( Model, Cmd Action )
 init { cachedGigs, now } location =
     let
@@ -69,14 +75,14 @@ init { cachedGigs, now } location =
         _ =
             List.map (Debug.log "Gig Date:" << .gigDate) gigs
 
+        _ =
+            Debug.log "Today:" today
+
         model =
             { history = [ parse location ]
             , nav = Closed
             , today = today
-            , shows =
-                gigs
-                    |> List.filter (.gigDate >> is SameOrAfter today)
-                    |> List.sortBy (Date.toTime << .gigDate)
+            , shows = filterAndSort today gigs
             }
     in
         model
@@ -165,12 +171,7 @@ update action model =
                         _ =
                             List.map (Debug.log "Gig Date:" << .gigDate) shows
                     in
-                        { model
-                            | shows =
-                                shows
-                                    |> List.filter (.gigDate >> is SameOrAfter model.today)
-                                    |> List.sortBy (Date.toTime << .gigDate)
-                        }
+                        { model | shows = filterAndSort model.today shows }
                             ! []
 
                 Err msg ->

@@ -48,10 +48,11 @@
     "prebuild": "rimraf static",
     "build": "webpack --config webpack.coffee",
     "build-dev": "webpack --config webpack.coffee",
+    "preinstall": "npm run clean",
     "postinstall": "elm package install -y",
-    "prestart": "rimraf static",
     "prewatch": "rimraf static",
     "watch": "webpack --progress --watch --config webpack.coffee",
+    "prestart": "rimraf static",
     "start": "webpack-dev-server --hot --inline --config webpack.coffee"
   }
 }

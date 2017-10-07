@@ -1,8 +1,5 @@
 FROM haskell:8.0
 
-RUN export PATH=$(stack path --local-bin):$PATH
-
-
 ########################
 # System Deps
 
@@ -35,16 +32,17 @@ RUN stack build --dependencies-only
 
 COPY . $WORKDIR
 RUN stack install
-RUN rm -rf $WORKDIR/.stack-work/
+# RUN rm -rf $WORKDIR/.stack-work/
 
 RUN docs
-RUN rm -rf $WORKDIR/documentation/
+# RUN rm -rf $WORKDIR/documentation/
 
 RUN elm-code
-RUN rm -rf $WORKDIR/elm-code/
+# RUN rm -rf $WORKDIR/elm-code/
 
-RUN npm i && npm run build
-RUN rm -rf $WORKDIR/node_modules/
-RUN rm -rf $WORKDIR/elm-stuff/
+RUN npm i
+RUN npm run build
+# RUN rm -rf $WORKDIR/node_modules/
+# RUN rm -rf $WORKDIR/elm-stuff/
 
 CMD caldwell
