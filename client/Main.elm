@@ -63,12 +63,18 @@ init { cachedGigs, now } location =
         today =
             Date.fromTime now
 
+        gigs =
+            (decodeLocalStorageGigs cachedGigs)
+
+        _ =
+            List.map (Debug.log "Gig Date:" << .gigDate) gigs
+
         model =
             { history = [ parse location ]
             , nav = Closed
             , today = today
             , shows =
-                (decodeLocalStorageGigs cachedGigs)
+                gigs
                     |> List.filter (.gigDate >> is SameOrAfter today)
                     |> List.sortBy (Date.toTime << .gigDate)
             }
@@ -157,12 +163,13 @@ update action model =
                 Ok shows ->
                     let
                         _ =
-                            Debug.log "Shows Reponse" <| toString shows
+                            List.map (Debug.log "Gig Date:" << .gigDate) shows
                     in
                         { model
                             | shows =
-                                List.sortBy (Date.toTime << .gigDate) <|
-                                    List.filter (.gigDate >> is SameOrAfter model.today) shows
+                                shows
+                                    |> List.filter (.gigDate >> is SameOrAfter model.today)
+                                    |> List.sortBy (Date.toTime << .gigDate)
                         }
                             ! []
 
