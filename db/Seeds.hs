@@ -12,7 +12,6 @@ accounts =
 
 gigs :: [Gig]
 gigs =
-    -- Times in Military because UTC
     [ Gig (date "2017-04-15 19:00") "Belcourt Taps"
     , Gig (date "2017-04-26 19:00") "SLOCO"
     , Gig (date "2017-05-03 18:00") "Blue Moon Waterfront Grille"
@@ -35,7 +34,7 @@ gigs =
     ]
 
 date :: String -> UTCTime
-date str = zonedTimeToUTC ((read (str ++ ":00")) :: ZonedTime)
+date str = zonedTimeToUTC . read $ str ++ ":00 CDT"
 
 main :: IO ()
 main = do
