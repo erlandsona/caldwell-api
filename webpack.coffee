@@ -11,11 +11,12 @@ outputPath = path.resolve __dirname, 'public'
 
 # determine build env
 TARGET_ENV =
-  if process.env.npm_lifecycle_event is 'build' or process.env.NODE_ENV is 'production'
+  if process.env.npm_lifecycle_event is 'build'
   then 'production' else 'development'
-outputFilename = if TARGET_ENV is 'production' then '[name]-[hash].js' else '[name].js'
 
 console.log 'WEBPACKing with ENV:', TARGET_ENV
+
+outputFilename = if TARGET_ENV is 'production' then '[name]-[hash].js' else '[name].js'
 
 cssLoader =
   loader: 'css-loader'

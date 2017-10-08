@@ -46,8 +46,8 @@
   "scripts": {
     "clean": "rimraf public node_modules elm-stuff",
     "prebuild": "rimraf public",
-    "build": "webpack --config webpack.coffee",
-    "build-dev": "webpack --config webpack.coffee",
+    "build": "webpack --profile --display-modules --config webpack.coffee",
+    "build-dev": "webpack --profile --display-modules --config webpack.coffee",
     "prewatch": "rimraf public",
     "watch": "webpack --progress --watch --config webpack.coffee",
     "prestart": "rimraf public",
