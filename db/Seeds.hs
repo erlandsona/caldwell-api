@@ -1,7 +1,7 @@
 import Database.Persist.Postgresql
 import Data.Time
 
-import Configuration
+import Config
 import Models
 
 accounts :: [Account]

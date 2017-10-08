@@ -1,9 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-
-module Main where
-
 -- Libs
 import Data.Proxy
 import Data.Text as T
@@ -47,7 +44,7 @@ main = do
     let spec :: Spec
         spec = Spec ["Server"] elmText
 
-    specsToDir [spec] "client"
+    specsToDir [spec] "app"
 
 
 

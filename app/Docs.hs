@@ -5,8 +5,6 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module Main where
-
 import Data.ByteString.Lazy (ByteString, writeFile)
 import Data.Proxy
 import Data.Text.Lazy.Encoding (encodeUtf8)

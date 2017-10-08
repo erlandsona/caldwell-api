@@ -27,10 +27,11 @@ repl-temp-*
 _main.js
 node_modules
 runner.sh
-static/
+public/
 npm-debug.log
 Session.vim
-app/Client/Generated.elm
+# app/Client/Generated.elm
+app/Server.elm
 tags
 tags*
 *.cabal

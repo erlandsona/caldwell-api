@@ -43,7 +43,7 @@ default-extensions:
   - OverloadedStrings
 
 library:
-  source-dirs: src
+  source-dirs: common
   when:
     - condition: (flag(dev)) || (flag(library-only))
       then:
@@ -65,8 +65,8 @@ library:
 
 executables:
   caldwell: &defaults
-    main: Main.hs
-    source-dirs: server
+    main: Server.hs
+    source-dirs: app
     ghc-options:
       - -Wall
       - -Werror
@@ -78,14 +78,17 @@ executables:
     when:
       - condition: flag(library-only)
         buildable: false
+
   docs:
     <<: *defaults
-    main: Main.hs
-    source-dirs: documentation
-  elm-code:
+    main: Docs.hs
+    source-dirs: app
+
+  elmify:
     <<: *defaults
-    main: Main.hs
-    source-dirs: elm-code
+    main: Elmify.hs
+    source-dirs: app
+
   seed:
     <<: *defaults
     main: Seeds.hs

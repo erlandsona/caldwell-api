@@ -15,7 +15,7 @@ scroll = window.pageYOffset || document.body.scrollTop
 
 # Attach port handlers to app instance.
 # app : Initializer -> Program (Maybe Value) Model Msg
-app = require('./Main').Site.fullscreen { cachedGigs, now }
+app = require('./Client').Site.fullscreen { cachedGigs, now }
 
 
 # Smooth Scrolling between Nav Links

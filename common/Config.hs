@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-module Configuration where
+module Config where
 
 import Control.Exception (throwIO)
 import Control.Monad.Except (ExceptT, MonadError)

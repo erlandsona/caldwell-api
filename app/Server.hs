@@ -22,7 +22,7 @@ import System.FilePath
 import WaiAppStatic.Types
 
 -- Source
-import Configuration
+import Config
 import Models
 import Routes
 
@@ -79,7 +79,7 @@ allGigs = do
     return $ entityVal <$> dbGigs
 
 files :: Application
-files = serveDirectoryWithFallback "static"
+files = serveDirectoryWithFallback "public"
 
 serveDirectoryWithFallback :: FilePath -> Application
 serveDirectoryWithFallback rootFilePath =

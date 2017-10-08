@@ -15,7 +15,7 @@
   "engines": {
     "node": "8.x"
   },
-  "main": "static/index.html",
+  "main": "public/index.html",
   "dependencies": {
     "autoprefixer": "^6.3.7",
     "coffee-loader": "0.7.3",
@@ -44,13 +44,13 @@
     "webpack-merge": "^3.0.0"
   },
   "scripts": {
-    "clean": "rimraf static node_modules elm-stuff",
-    "prebuild": "rimraf static",
+    "clean": "rimraf public node_modules elm-stuff",
+    "prebuild": "rimraf public",
     "build": "webpack --config webpack.coffee",
     "build-dev": "webpack --config webpack.coffee",
-    "prewatch": "rimraf static",
+    "prewatch": "rimraf public",
     "watch": "webpack --progress --watch --config webpack.coffee",
-    "prestart": "rimraf static",
+    "prestart": "rimraf public",
     "start": "webpack-dev-server --hot --inline --config webpack.coffee"
   }
 }
