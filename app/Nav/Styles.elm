@@ -63,6 +63,7 @@ css =
         , flexDirection column
         , prop "justify-content" "space-around"
         , prop "align-items" "center"
+        , prop "transition" "0.3s"
         , position absolute
         , top (pct 47)
         , height (px <| dotSize * 3)

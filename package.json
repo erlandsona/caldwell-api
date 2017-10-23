@@ -31,6 +31,7 @@
     "file-loader": "^0.10.1",
     "font-awesome": "^4.6.3",
     "html-webpack-plugin": "^2.28.0",
+    "lodash.throttle": "4.1.1",
     "postcss-loader": "^1.1.1",
     "rambda": "^0.7.0",
     "rimraf": "^2.5.3",

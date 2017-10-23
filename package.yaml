@@ -17,6 +17,7 @@ dependencies:
   - elm-export
   - elm-export-persistent
   - filepath
+  # - hilt
   - monad-logger
   - mtl
   - persistent

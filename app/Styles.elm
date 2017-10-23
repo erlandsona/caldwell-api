@@ -23,15 +23,12 @@ css : Stylesheet
 css =
     (stylesheet << namespace homepage) <|
         List.concat
-            [ [ html
-                    [ height (pct 100)
-                    , backgroundColor black
-                    ]
-              , body
-                    [ color white
-                    ]
-              , each [ body, html ]
-                    [ fontFamily sansSerif
+            [ [ body
+                    [ backgroundColor black
+                    , color white
+                    , overflow auto
+                    , height (vh 100)
+                    , fontFamily sansSerif
                     , fontFamilies [ "Josefin Sans" ]
                     , fontSize (pct 93)
                     , fontWeight (int 300)

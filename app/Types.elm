@@ -20,18 +20,22 @@ type Page
     | Contact
 
 
+pages : List Page
+pages =
+    [ Home, About, Shows, Music, Contact ]
+
+
 type Action
-    = GoToPage Location
-    | SetUrl Page
+    = From Location
+    | ScrollTo Page
+    | Stop ()
+    | UpdateUrlWith Page
     | Toggle Nav
+    | SetPageTops (List Float)
     | ShowResponse (Result Http.Error (List Gig))
       -- the message emitted by the input port
       -- brings a tuple with previous and current scroll values
     | Header Move
-      -- message to be sent when scrollTop < 400px
-    | Darken
-      -- message to be sent when scrollTop > 400px
-    | Brighten
 
 
 

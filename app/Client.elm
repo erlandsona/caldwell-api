@@ -2,12 +2,12 @@ module Site exposing (main)
 
 -- Libs
 
-import Scroll
+import Array exposing (fromList, get)
 import Css exposing (num, opacity)
 import Css.Helpers
 import Debug
 import Date exposing (Date)
-import Date.Extra.Compare exposing (is, Compare2(..))
+import Date.Extra.Compare exposing (Compare2(..), is)
 import Http
 import Html exposing (Html, header, node, span, text)
 import Html.Events exposing (onClick)
@@ -16,7 +16,8 @@ import Json.Decode exposing (decodeValue, int, keyValuePairs, maybe, string)
 import Json.Encode exposing (Value)
 import Maybe exposing (withDefault)
 import Maybe.Extra exposing (unpack)
-import Navigation as Nav exposing (programWithFlags, Location)
+import Navigation as Nav exposing (Location, programWithFlags)
+import Scroll exposing (Direction(..), direction)
 import String exposing (toLower)
 import Time exposing (Time)
 import UrlParser as Url exposing (oneOf, s)
@@ -78,27 +79,45 @@ init { cachedGigs, now } location =
         _ =
             Debug.log "Today:" today
 
+        initialHistory =
+            [ parse location ]
+
+        initialPage =
+            withDefault Home (List.head initialHistory)
+
+        _ =
+            Debug.log "initialPage:" initialPage
+
         model =
-            { history = [ parse location ]
+            { history = initialHistory
+            , currentPage = initialPage
+            , scrolling = False
+            , scrollTargets = []
             , nav = Closed
             , today = today
             , shows = filterAndSort today gigs
             }
     in
         model
-            ! [ locationToScroll location snapIntoView
+            ! [ locationToScroll location |> snapIntoView
               , Http.send ShowResponse getApiV1Shows
+              , postInit <| List.map querySelector pages
               ]
 
 
-locationToScroll : Location -> (String -> Cmd action) -> Cmd action
-locationToScroll location scrollFunction =
-    location
-        |> parse
-        |> Main
-        |> Css.Helpers.identifierToString homepage
-        |> (++) "."
-        |> scrollFunction
+locationToScroll : Location -> String
+locationToScroll =
+    (++) "."
+        << Css.Helpers.identifierToString homepage
+        << Main
+        << parse
+
+
+querySelector : Page -> String
+querySelector =
+    (++) "."
+        << Css.Helpers.identifierToString homepage
+        << Main
 
 
 parse : Location -> Page
@@ -108,12 +127,12 @@ parse location =
 
 urlParser : Url.Parser (Page -> a) a
 urlParser =
-    oneOf
-        [ Url.map Shows (s "shows")
-        , Url.map About (s "about")
-        , Url.map Music (s "music")
-        , Url.map Contact (s "contact")
-        ]
+    oneOf <|
+        List.map
+            (\page ->
+                Url.map page (s (page |> toString |> toLower))
+            )
+            pages
 
 
 { id, class, classList } =
@@ -127,19 +146,19 @@ view model =
         ]
         [ node caldwellBackground [] []
         , node blackOverlay
-            (case List.head model.history of
-                Just Home ->
+            (case model.currentPage of
+                Home ->
                     []
 
                 _ ->
                     [ styles [ opacity (num 0.9) ] ]
             )
             []
-        , header [ onClick (SetUrl Home) ]
+        , header [ onClick (ScrollTo Home) ]
             [ span [] [ text "C" ]
             , text "aldwell"
             ]
-        , Nav.template model.nav
+        , Nav.template model
         , Main.template model.nav model.shows
         ]
 
@@ -147,22 +166,58 @@ view model =
 update : Action -> Model -> ( Model, Cmd Action )
 update action model =
     case action of
-        GoToPage location ->
-            { model | history = (::) (parse location) model.history }
-                ! [ locationToScroll location easeIntoView
-                  ]
-
-        SetUrl url ->
-            model
-                ! [ Nav.newUrl <|
-                        if url == Home then
+        ScrollTo page ->
+            (if Home == page then
+                { model
+                    | scrolling = False
+                    , nav = Open
+                }
+             else
+                { model
+                    | scrolling = False
+                    , nav = Closed
+                }
+            )
+                ! [ Nav.modifyUrl <|
+                        if page == Home then
                             "/"
                         else
-                            url |> toString |> toLower
+                            urlFrom page
+                  , querySelector page |> easeIntoView
                   ]
 
-        Toggle newState ->
-            { model | nav = newState } ! []
+        UpdateUrlWith page ->
+            (if Home == page then
+                { model | nav = Open }
+             else
+                { model | nav = Closed }
+            )
+                ! [ Nav.modifyUrl <|
+                        if page == Home then
+                            "/"
+                        else
+                            urlFrom page
+                  ]
+
+        From location ->
+            let
+                currentPage =
+                    parse location
+
+                _ =
+                    Debug.log "CurrentPage:" currentPage
+            in
+                if currentPage == model.currentPage then
+                    model ! []
+                else
+                    { model
+                        | history = currentPage :: model.history
+                        , currentPage = currentPage
+                    }
+                        ! []
+
+        Toggle nav ->
+            { model | nav = nav } ! []
 
         ShowResponse response ->
             case response of
@@ -175,39 +230,61 @@ update action model =
                             ! []
 
                 Err msg ->
-                    let
-                        _ =
-                            Debug.log "Shows Reponse" <| toString msg
-                    in
-                        model ! []
-
-        Darken ->
-            { model | history = (::) About model.history } ! []
-
-        Brighten ->
-            { model | history = (::) Home model.history } ! []
+                    -- let
+                    --     _ =
+                    --         Debug.log "Shows Reponse" <| toString msg
+                    -- in
+                    model ! []
 
         Header move ->
-            Scroll.handle
-                -- when scrollTop > 10px, send Darken message
-                [ Scroll.onCrossDown 300 <| update Darken
-                  -- when scrollTop < 10px, send Brighten message
-                , Scroll.onCrossUp 300 <| update Brighten
-                ]
-                move
-                model
+            if model.scrolling then
+                let
+                    indexedPageTops =
+                        List.indexedMap (\idx px -> ( idx, px )) model.scrollTargets
+                in
+                    Scroll.handle
+                        -- when scrollTop > 10px, send Darken message
+                        (List.map
+                            (\( idx, px ) ->
+                                let
+                                    pageArr =
+                                        fromList pages
+
+                                    topPage =
+                                        withDefault Home <| get idx <| pageArr
+
+                                    bottomPage =
+                                        withDefault About <| get (idx + 1) <| pageArr
+                                in
+                                    Scroll.onCrossOver px <|
+                                        if Scroll.Up == direction move then
+                                            update (UpdateUrlWith topPage)
+                                            -- get  0 (fromList [0,5,3]) == Just 0
+                                        else
+                                            update (UpdateUrlWith bottomPage)
+                            )
+                            indexedPageTops
+                        )
+                        move
+                        model
+            else
+                model ! []
+
+        Stop v ->
+            { model | scrolling = True } ! []
+
+        SetPageTops scrollTargets ->
+            { model | scrollTargets = scrollTargets } ! []
 
 
-
--- Animate animationAction ->
---     -- here you can apply new styles, to be animated
---     --- ...
---     model ! []
+urlFrom : Page -> String
+urlFrom =
+    toString >> toLower
 
 
 main : Program Initializer Model Action
 main =
-    programWithFlags GoToPage
+    programWithFlags From
         { init = init
         , view = view
         , update = update
@@ -216,8 +293,9 @@ main =
 
 
 subscriptions : Model -> Sub Action
-subscriptions model =
+subscriptions _ =
     Sub.batch
         [ scroll Header
-          -- , Animation.subscription Animate [ model.style ]
+        , scrollStart Stop
+        , scrollTargets SetPageTops
         ]

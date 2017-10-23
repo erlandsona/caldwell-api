@@ -90,7 +90,7 @@ fileOrIndex :: FilePath -> Pieces -> IO LookupResult
 fileOrIndex rootFilePath pieces = do
   res <- ssLookupFile (defaultFileServerSettings rootFilePath) pieces
   case res of
-    LRNotFound -> undefined -- index.html here
+    LRNotFound -> return res -- index.html here
     _ -> return res
 
 doMigrations :: SqlPersistT IO ()

@@ -88,13 +88,13 @@ if TARGET_ENV is 'development'
     module:
       rules: [
         test: /\.elm$/
-        exclude: [/elm-stuff/, /node_modules/, /Stylesheets\.elm$/]
+        exclude: [/elm-stuff/, /node_modules/, /app\/Stylesheets\.elm$/]
         use: [
           'elm-hot-loader'
           'elm-webpack-loader?verbose=true&warn=true&debug=true'
         ]
       ,
-        test: /Stylesheets\.elm$/
+        test: /app\/Stylesheets\.elm$/
         use: [
           'style-loader'
           'css-loader'
@@ -118,10 +118,10 @@ if TARGET_ENV is 'production'
     module:
       rules: [
         test:    /\.elm$/
-        exclude: [/elm-stuff/, /node_modules/, /Stylesheets\.elm$/]
+        exclude: [/elm-stuff/, /node_modules/, /app\/Stylesheets\.elm$/]
         use:     'elm-webpack-loader'
       ,
-        test: /Stylesheets\.elm$/
+        test: /app\/Stylesheets\.elm$/
         use: ExtractTextPlugin.extract
           fallback: "style-loader"
           use: [
