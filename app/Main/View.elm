@@ -18,6 +18,7 @@ import Html.CssHelpers exposing (withNamespace)
 
 import Bio.View as Bio
 import Constants exposing (..)
+import Model exposing (Model)
 import Server exposing (Gig)
 import Types exposing (..)
 
@@ -26,16 +27,18 @@ import Types exposing (..)
     withNamespace homepage
 
 
-template : Nav -> List Gig -> Html Action
-template navState gigs =
+template : Model -> Html Action
+template model =
     main_
         [ styles
-            (case navState of
-                Open ->
+            (if model.currentPage == Home then
+                []
+             else
+                (if model.nav == Open then
                     [ opacity (num 0.25) ]
-
-                _ ->
+                 else
                     []
+                )
             )
         , class [ Main () ]
         ]
@@ -46,7 +49,7 @@ template navState gigs =
             , socialLink "reverbnation" "caldwellband" Icon.star
             ]
         , section [ class [ Section, Main About ] ] Bio.template
-        , section [ class [ Section, Main Shows ] ] [ caldwellCalendar_ gigs ]
+        , section [ class [ Section, Main Shows ] ] [ caldwellCalendar_ model.shows ]
         , section [ class [ Section, Main Music ] ]
             [ h2 [] [ text (toString Music) ]
             , fadingHr

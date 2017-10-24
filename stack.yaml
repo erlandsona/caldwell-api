@@ -24,6 +24,12 @@ packages:
     git: https://github.com/supermario/elm-export-persistent.git
     commit: dea9e3af87bba51c0adf8c0e4b0da38f50dce4a8
   extra-dep: true
+
+- location:
+    git: https://github.com/supermario/hilt.git
+    commit: 366cd9b59507240360df01986d48a8ba959537f1 # Current Master Sha
+  extra-dep: true
+
 # - location:
 #     git: https://github.com/erlandsona/servant-generic.git
 #     commit: f731610e499322fd49c40c1e82ecd36058fa0891
@@ -35,6 +41,8 @@ packages:
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
 extra-deps:
+- heroku-0.1.2.3
+- heroku-persistent-0.2.0
 - servant-generic-0.1.0.0
 
 # Override default flag values for local packages and extra-deps

@@ -14,7 +14,7 @@ import Models
 
 data Routes path = Routes
     { api :: path :- ApiRouter
-    , root :: path :- Raw
+    -- , root :: path :- Raw
     } deriving Generic
 
 type Router = ToServant (Routes AsApi)

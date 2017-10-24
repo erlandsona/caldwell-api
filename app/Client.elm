@@ -159,7 +159,7 @@ view model =
             , text "aldwell"
             ]
         , Nav.template model
-        , Main.template model.nav model.shows
+        , Main.template model
         ]
 
 

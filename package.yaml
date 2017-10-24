@@ -17,7 +17,7 @@ dependencies:
   - elm-export
   - elm-export-persistent
   - filepath
-  # - hilt
+  - hilt
   - monad-logger
   - mtl
   - persistent
@@ -35,7 +35,6 @@ dependencies:
   - transformers
   - turtle
   - wai
-  - wai-app-static
   - wai-cors
   - wai-extra
   - warp
