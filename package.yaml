@@ -20,6 +20,7 @@ dependencies:
   - hilt
   - monad-logger
   - mtl
+  - http-types
   - persistent
   - persistent-postgresql
   - persistent-template
@@ -35,9 +36,11 @@ dependencies:
   - transformers
   - turtle
   - wai
+  - wai-app-static
   - wai-cors
   - wai-extra
   - warp
+  - yaml
 
 default-extensions:
   - OverloadedStrings

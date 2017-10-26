@@ -4,15 +4,17 @@
 {-# LANGUAGE TypeOperators     #-}
 
 -- Libs
-import Control.Monad.Except
 import Control.Monad.Reader (runReaderT)
 import Database.Persist.Sql
 import Database.Persist.Postgresql (runSqlPool)
 import Hilt.Server
+import Network.HTTP.Types
 import Network.Wai
+import Network.Wai.Application.Static
 import Network.Wai.Handler.Warp (run)
 import Servant
 import Servant.Generic
+-- import WaiAppStatic.Types
 
 -- Source
 import Config
@@ -31,8 +33,8 @@ main = do
     runSqlPool doMigrations pool
     putStrLn $ "Serving on PORT: " ++ show port
 
-    let convertApp :: App :~> ExceptT ServantErr IO
-        convertApp = Nat (flip runReaderT settings . runApp)
+    let convertApp :: App :~> Handler
+        convertApp = NT (flip runReaderT settings . runApp)
 
     let apiServer :: ApiRoutes AsServer
         apiServer = ApiRoutes
@@ -43,12 +45,16 @@ main = do
     let server :: Routes AsServer
         server = Routes
             { api = toServant apiServer
+            , root = serveDirectoryWith $ (defaultWebAppSettings "public")
+                { ss404Handler = return (\_ responder ->
+                                            responder $
+                                            responseFile status404 [] "public/404.html" Nothing
+                                        )
+                }
             }
-
 
     let middlewares :: Middleware
         middlewares = compression
-                    . staticFiles "public"
                     . allowCsrf
                     . corsified
 

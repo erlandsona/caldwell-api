@@ -4,7 +4,7 @@
 module Config where
 
 import Control.Exception (throwIO)
-import Control.Monad.Except (ExceptT, MonadError)
+import Control.Monad.Except (MonadError)
 import Control.Monad.Logger (runNoLoggingT, runStdoutLoggingT)
 import Control.Monad.Reader
     ( MonadIO
@@ -28,7 +28,7 @@ import Database.Persist.Postgresql
 import Network.Wai (Middleware)
 import Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import Safe (readMay)
-import Servant (ServantErr)
+import Servant
 import System.Environment (lookupEnv)
 
 -- | This type represents the effects we want to have for our application.
@@ -40,7 +40,7 @@ import System.Environment (lookupEnv)
 -- monad stack without having to modify code that uses the current layout.
 newtype App a
     = App
-    { runApp :: ReaderT Settings (ExceptT ServantErr IO) a
+    { runApp :: ReaderT Settings (Handler) a
     } deriving
         ( Functor
         , Applicative
@@ -115,9 +115,11 @@ zip3WithDefaults = zipWith3 $ \key def envVar -> key <> fromMaybe def envVar
 
 -- | The number of pools to use for a given environment.
 envPool :: Environment -> Int
-envPool Test = 1
-envPool Development = 1
-envPool Production = 8
+envPool env =
+    case env of
+        Test -> 1
+        Development -> 1
+        Production -> 8
 
 runDb :: (MonadReader Settings m, MonadIO m) => SqlPersistT IO b -> m b
 runDb query = do
