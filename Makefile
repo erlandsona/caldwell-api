@@ -1,3 +1,3 @@
 install:
-	stack build --copy-bins
+	# stack build --copy-bins
 	stack exec elmify
