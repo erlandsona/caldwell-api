@@ -1,4 +1,4 @@
-FROM haskell:8.0
+FROM fpco/stack-build:lts-9.10
 
 ########################
 # System Deps
@@ -17,32 +17,14 @@ RUN apt-get install -y --assume-yes \
   nodejs
 
 # Remove apt caches to reduce the size of our container.
-RUN rm -rf /var/lib/apt/lists/*
+# RUN rm -rf /var/lib/apt/lists/*
 
 
 ########################
 # Project Deps
-RUN mkdir -p /app
-WORKDIR /app
+RUN mkdir -p /caldwell
+WORKDIR /caldwell
 
 # Install all dependencies in app's .cabal file.
-COPY ./package.yaml $WORKDIR
-COPY ./stack.yaml $WORKDIR
-RUN stack build --dependencies-only
-
 COPY . $WORKDIR
-RUN stack install
-# RUN rm -rf $WORKDIR/.stack-work/
-
-RUN docs
-# RUN rm -rf $WORKDIR/documentation/
-
-RUN elm-code
-# RUN rm -rf $WORKDIR/elm-code/
-
-RUN npm i
-RUN npm run build
-# RUN rm -rf $WORKDIR/node_modules/
-# RUN rm -rf $WORKDIR/elm-stuff/
-
-CMD caldwell
+CMD ./scripts/build

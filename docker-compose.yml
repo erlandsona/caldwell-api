@@ -11,18 +11,16 @@ services:
 
   web:
     build: .
-    command: caldwell
     environment:
       DB_HOST: db
-    expose:
-      - '3737'
+    ports:
+      - '3737:3737'
     image: caldwell
     volumes:
-      - .:/app
-      - box:/box
+      - .:/caldwell
     depends_on:
       - db
-    working_dir: /app
+    working_dir: /caldwell
 
   db:
     image: postgres
@@ -32,6 +30,3 @@ services:
     # For exposing to host machine.
     # ports:
     #   - 'host:5432'
-
-volumes:
-  box:
