@@ -1,31 +1,32 @@
 version: '3'
 
 services:
-  nginx:
-    build: ./nginx
-    image: nginx
-    ports:
-      - '80:80'
-    depends_on:
-      - web
+  # nginx:
+  #   build: ./nginx
+  #   image: nginx
+  #   ports:
+  #     - '80:80'
+  #   depends_on:
+  #     - web
 
   web:
     build: .
-    command: caldwell
     environment:
       DB_HOST: db
-    expose:
-      - '3737'
+    ports:
+      - '3737:3737'
     image: caldwell
-    volumes:
-      - .:/app
-      - box:/box
     depends_on:
       - db
-    working_dir: /app
+    volumes:
+      - .:/caldwell
+      - stack_root:/root/.stack
+    working_dir: /caldwell
 
   db:
     image: postgres
+    environment:
+      - POSTGRES_DB=caldwell_development
     # For linking services.
     expose:
       - '5432'
@@ -34,4 +35,4 @@ services:
     #   - 'host:5432'
 
 volumes:
-  box:
+  stack_root:

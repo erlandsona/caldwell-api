@@ -9,15 +9,8 @@ docker-compose.yml
 .git/
 .gitignore
 
-# stack build directory
-.stack-work/
-
-# # Elm build directory
-elm-stuff/
-#
-# # Node Deps?
-node_modules/
-
-scripts/
-
+# Superfluous files created by Vim
+Session.vim
 tags
+tags.lock
+

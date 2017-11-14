@@ -52,6 +52,15 @@ flags: {}
 # Extra package databases containing global packages
 extra-package-dbs: []
 
+# Not working on OSX
+# See: https://github.com/commercialhaskell/stack/issues/2455
+# &: https://github.com/docker/for-mac/issues/68
+# docker:
+#   enable: true
+#   set-user: true
+#   run-args: ["--ulimit=nofile=60000", "--memory=4g"]
+
+
 # Control whether we use the GHC we find on the path
 # system-ghc: true
 #

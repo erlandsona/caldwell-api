@@ -1,0 +1,12 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:<TAG>",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "3737"
+    }
+  ]
+}

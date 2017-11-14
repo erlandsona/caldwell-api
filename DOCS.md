@@ -20,7 +20,7 @@ Clients must supply the following data
 
 - No response body
 
-## GET /v1/accounts
+## GET /api/v1/accounts
 
 #### Authentication
 
@@ -36,7 +36,14 @@ Clients must supply the following data
 
 - Supported content types are:
 
+    - `application/json;charset=utf-8`
     - `application/json`
+
+- 
+
+```javascript
+[]
+```
 
 - 
 
@@ -53,22 +60,16 @@ Clients must supply the following data
 - 
 
 ```javascript
+[{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"}]
+```
+
+- 
+
+```javascript
 [{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"}]
 ```
 
-- 
-
-```javascript
-[{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"}]
-```
-
-- 
-
-```javascript
-[{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"},{"accountLastName":"Erlandson","accountFirstName":"Austin","accountEmail":"austin@erlandson.com"}]
-```
-
-## GET /v1/shows
+## GET /api/v1/shows
 
 #### Authentication
 
@@ -84,6 +85,7 @@ Clients must supply the following data
 
 - Supported content types are:
 
+    - `application/json;charset=utf-8`
     - `application/json`
 
 - 
@@ -95,24 +97,24 @@ Clients must supply the following data
 - 
 
 ```javascript
-[{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"}]
+[]
 ```
 
 - 
 
 ```javascript
-[{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"}]
+[{"gigVenue":"A Place in Nashville","gigDate":"2017-07-21T00:00:00Z"}]
 ```
 
 - 
 
 ```javascript
-[{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"}]
+[{"gigVenue":"A Place in Nashville","gigDate":"2017-07-21T00:00:00Z"}]
 ```
 
 - 
 
 ```javascript
-[{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"Somthing","gigDate":"2017-07-21T00:00:00Z"}]
+[{"gigVenue":"A Place in Nashville","gigDate":"2017-07-21T00:00:00Z"},{"gigVenue":"A Place in Nashville","gigDate":"2017-07-21T00:00:00Z"}]
 ```
 

@@ -45,13 +45,12 @@
     "webpack-merge": "^3.0.0"
   },
   "scripts": {
-    "clean": "rimraf public node_modules elm-stuff",
-    "prebuild": "rimraf public",
     "build": "webpack --profile --display-modules --config webpack.coffee",
     "build-dev": "webpack --profile --display-modules --config webpack.coffee",
     "prewatch": "rimraf public",
     "watch": "webpack --progress --watch --config webpack.coffee",
     "prestart": "rimraf public",
-    "start": "webpack-dev-server --hot --inline --config webpack.coffee"
+    "start": "webpack-dev-server --hot --inline --config webpack.coffee",
+    "postinstall": "elm-package install"
   }
 }

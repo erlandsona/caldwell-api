@@ -1,0 +1,14 @@
+FROM fpco/stack-run:lts-9.10
+
+RUN mkdir -p /app
+WORKDIR /app
+
+COPY public /app
+COPY caldwell /app
+
+# Might need this?
+# COPY seed /app
+
+EXPOSE 3737
+
+CMD ["/app/caldwell"]

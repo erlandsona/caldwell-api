@@ -87,7 +87,7 @@ makePool env = do
                 if env == Test
                 then "_test"
                 else "_development"
-            , "erlandsona", "", "5432"
+            , "postgres", "", "5432"
             ]
     envVars <- traverse lookupEnv envs
 
