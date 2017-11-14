@@ -8,7 +8,7 @@ stack exec elmify --system-ghc
 stack exec docs --system-ghc
 
 # Elm build
-npm i
+npm i --unsafe-perm
 npm run build
 
 # Run the Servant+Elm Application

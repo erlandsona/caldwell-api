@@ -9,14 +9,6 @@ docker-compose.yml
 .git/
 .gitignore
 
-# Don't share libs built for OSX.
-# stack build directory
-.stack-work/ # Haskell
-elm-stuff/ # Elm
-node_modules/ # Node
-
-scripts/ # Superfluous scripts
-
 # Superfluous files created by Vim
 Session.vim
 tags

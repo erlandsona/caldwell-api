@@ -35,3 +35,4 @@ app/Server.elm
 tags
 tags*
 *.cabal
+ci-access-key.json

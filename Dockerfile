@@ -19,12 +19,11 @@ RUN apt-get install -y --assume-yes \
 # Remove apt caches to reduce the size of our container.
 # RUN rm -rf /var/lib/apt/lists/*
 
-
 ########################
 # Project Deps
-RUN mkdir -p /caldwell
-WORKDIR /caldwell
 
-# Install all dependencies in app's .cabal file.
+RUN mkdir -p /app
+WORKDIR /app
 COPY . $WORKDIR
-CMD ./scripts/build
+
+CMD ./bin/build
