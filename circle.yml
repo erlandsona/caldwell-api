@@ -1,6 +1,7 @@
 machine:
   services:
     - docker
+    - node
 
 dependencies:
   cache_directories:
@@ -18,11 +19,14 @@ dependencies:
   override:
     - stack --no-terminal setup
     - stack --no-terminal build --only-dependencies -j1
+    - npm install
 
 deployment:
   elasticbeanstalk:
     branch: master
     commands:
       - stack --no-terminal install --local-bin-path .
+      - elmify
+      - npm run build
       - docker build --rm=false -t 357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:$CIRCLE_SHA1 -f Dockerfile.deploy .
       - ./bin/deploy $CIRCLE_SHA1

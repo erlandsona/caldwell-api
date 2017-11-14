@@ -1,4 +1,4 @@
-FROM fpco/stack-run:lts-9.10
+FROM fpco/stack-build:lts-9.10
 
 RUN mkdir -p /app
 WORKDIR /app
