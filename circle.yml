@@ -1,3 +1,7 @@
+machine:
+  services:
+    - docker
+
 dependencies:
   cache_directories:
     - "~/docker"
@@ -20,5 +24,5 @@ deployment:
     branch: master
     commands:
       - stack --no-terminal install --local-bin-path .
-      - sudo docker build --rm=false -t 357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:$CIRCLE_SHA1 -f Dockerfile.deploy .
+      - docker build --rm=false -t 357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:$CIRCLE_SHA1 -f Dockerfile.deploy .
       - ./bin/deploy $CIRCLE_SHA1
