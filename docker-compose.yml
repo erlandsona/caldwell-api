@@ -20,7 +20,7 @@ services:
       - db
     volumes:
       - .:/caldwell
-      - stack_root:/root/.stack
+      - box:/box
     working_dir: /caldwell
 
   db:
@@ -35,4 +35,4 @@ services:
     #   - 'host:5432'
 
 volumes:
-  stack_root:
+  box:

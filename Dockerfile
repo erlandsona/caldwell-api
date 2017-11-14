@@ -22,6 +22,8 @@ RUN apt-get install -y --assume-yes \
 ########################
 # Project Deps
 
+ENV STACK_ROOT /box
+
 RUN mkdir -p /app
 WORKDIR /app
 COPY . $WORKDIR

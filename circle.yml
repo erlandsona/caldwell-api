@@ -20,5 +20,5 @@ deployment:
     branch: master
     commands:
       - stack --no-terminal install --local-bin-path .
-      - docker build --rm=false -t 357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:$CIRCLE_SHA1 -f Dockerfile.deploy .
+      - sudo docker build --rm=false -t 357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:$CIRCLE_SHA1 -f Dockerfile.deploy .
       - ./bin/deploy $CIRCLE_SHA1
