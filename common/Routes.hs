@@ -20,11 +20,10 @@ data Routes path = Routes
 type Router = ToServant (Routes AsApi)
 
 type Version = "v1"
-type Api = "api"
 
 data ApiRoutes path = ApiRoutes
-    { accounts :: path :- Api :> Version :> "accounts" :> Get '[JSON] [Account]
-    , gigs :: path :- Api :> Version :> "shows" :> Get '[JSON] [Gig]
+    { accounts :: path :- Version :> "accounts" :> Get '[JSON] [Account]
+    , gigs :: path :- Version :> "shows" :> Get '[JSON] [Gig]
     } deriving Generic
 
 type ApiRouter = ToServant (ApiRoutes AsApi)

@@ -6,14 +6,14 @@ import Data.Proxy
 import Data.Text as T
 import Elm
 import Servant.Elm
-    (-- ElmOptions(..)
-    -- , UrlPrefix(Static)
-      defElmOptions
+    ( ElmOptions(..)
+    , UrlPrefix(Static)
+    , defElmOptions
     , generateElmForAPIWith
     )
 
 -- Source
--- import Configuration
+import Config
 import Models
 import Routes
 
@@ -25,20 +25,20 @@ main = do
     --     }
     -- let formattedSpec = elmFormat $ T.unlines elmText
 
-    -- env <- lookupSetting "ENV" Development
+    env <- lookupSetting "ENV" Development
 
-    -- let options :: ElmOptions
-    --     options =
-    --         if Development == env
-    --         then defElmOptions { urlPrefix = Static "http://localhost:3737" }
-    --         else defElmOptions
+    let options :: ElmOptions
+        options =
+            case env of
+                Production -> defElmOptions { urlPrefix = Static "https://api.caldwell.band" }
+                _ -> defElmOptions
 
     let elmText :: [Text]
         elmText =
             ( defElmImports
             : mkElmTypeD'Encoders (Proxy :: Proxy Account)
             : mkElmTypeD'Encoders (Proxy :: Proxy Gig)
-            : generateElmForAPIWith defElmOptions (Proxy :: Proxy ApiRouter)
+            : generateElmForAPIWith options (Proxy :: Proxy ApiRouter)
             )
 
     let spec :: Spec
