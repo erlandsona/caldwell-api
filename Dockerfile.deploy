@@ -1,11 +1,14 @@
-FROM busybox
+FROM phusion/baseimage
+
+RUN apt-get update
+RUN apt-get install -y --assume-yes libpq-dev
 
 RUN mkdir -p /app
 WORKDIR /app
 
-COPY seed /app
-COPY caldwell /app
+COPY seed /app/
+COPY caldwell /app/
 
 EXPOSE 3737
 
-CMD ["/app/caldwell"]
+CMD ./caldwell
