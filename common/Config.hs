@@ -3,7 +3,7 @@
 
 module Config where
 
-import Control.Exception (throwIO)
+-- import Control.Exception (throwIO)
 import Control.Monad.Except (MonadError)
 import Control.Monad.Logger (runNoLoggingT, runStdoutLoggingT)
 import Control.Monad.Reader
@@ -13,7 +13,7 @@ import Control.Monad.Reader
     , asks
     , liftIO
     )
-import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
+-- import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
 import qualified Data.ByteString.Char8 as BS
 import Data.List (intercalate)
 import Data.Maybe (fromMaybe)
@@ -84,9 +84,10 @@ makePool env = do
         defaults =
             [ "localhost"
             , "caldwell" <>
-                if env == Test
-                then "_test"
-                else "_development"
+                case env of
+                    Production -> ""
+                    Development -> "_development"
+                    Test -> "_test"
             , "postgres", "", "5432"
             ]
     envVars <- traverse lookupEnv envs
@@ -97,13 +98,14 @@ makePool env = do
 
     case env of
         Production -> do
-            pool <- runMaybeT $ do
-                prodStr <- MaybeT . lookupEnv $ "DATABASE_URL"
-                runStdoutLoggingT $ createPostgresqlPool (BS.pack prodStr) (envPool Production)
+            -- pool <- runMaybeT $ do
+            --     prodStr <- MaybeT . lookupEnv $ "DATABASE_URL"
+            --     runStdoutLoggingT $ createPostgresqlPool (BS.pack prodStr) (envPool Production)
 
-            case pool of
-                Just a -> return a
-                Nothing -> throwIO (userError "Database Configuration not present in environment.")
+            -- case pool of
+            --     Just a -> return a
+            --     Nothing -> throwIO (userError "Database Configuration not present in environment.")
+            return =<< runStdoutLoggingT $ createPostgresqlPool makeConnStr (envPool Production)
         Development ->
             return =<< runStdoutLoggingT $ createPostgresqlPool makeConnStr (envPool Development)
 
