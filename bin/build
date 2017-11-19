@@ -3,7 +3,7 @@
 set -e
 
 # Haskell Build and Generate Docs and Client Http Code.
-stack install --system-ghc --local-bin-path=.
+stack build --system-ghc
 # stack exec elmify --system-ghc
 # stack exec docs --system-ghc
 

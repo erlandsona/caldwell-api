@@ -3,10 +3,11 @@
 set -e
 
 SHA1=$1
+
 docker build --rm=false -t 357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:$SHA1 -f Dockerfile.deploy .
+
 # Push image to ECR
-# $(aws ecr get-login --region us-east-1)
-$(aws ecr get-login --region us-east-1 | sed 's|-e none||')
+$(aws ecr get-login --region us-east-1)
 
 docker push 357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:$SHA1
 
