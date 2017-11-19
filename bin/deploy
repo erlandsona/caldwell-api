@@ -5,7 +5,9 @@ set -e
 SHA1=$1
 
 # Push image to ECR
-$(aws ecr get-login --region us-east-1)
+# $(aws ecr get-login --region us-east-1)
+eval $(aws ecr get-login --region us-east-1 | sed 's|https://||')
+
 docker push 357129611319.dkr.ecr.us-east-1.amazonaws.com/erlandsona:$SHA1
 
 # Create new Elastic Beanstalk version
@@ -18,6 +20,6 @@ aws elasticbeanstalk create-application-version --application-name caldwell \
     --region us-east-1
 
 # Update Elastic Beanstalk environment to new version
-aws elasticbeanstalk update-environment --environment-name caldwell-env \
+aws elasticbeanstalk update-environment --environment-name caldwell \
     --version-label $SHA1 \
     --region us-east-1

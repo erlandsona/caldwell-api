@@ -5,11 +5,11 @@ set -e
 CIUSER=ci
 ACCOUNTID=357129611319
 
-Create ECR repo
+# Create ECR repo
 aws ecr create-repository --repository-name erlandsona --region us-east-1
 echo "created repository"
 
-Create the CI user with appropricate permissions
+# Create the CI user with appropricate permissions
 aws iam create-user --user-name $CIUSER
 echo "created user"
 aws iam attach-user-policy --user-name $CIUSER --policy-arn arn:aws:iam::aws:policy/AWSElasticBeanstalkFullAccess
