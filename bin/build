@@ -4,12 +4,8 @@ set -e
 
 # Haskell Build and Generate Docs and Client Http Code.
 stack build --system-ghc
-stack exec elmify --system-ghc
-stack exec docs --system-ghc
-
-# Elm build
-npm i --unsafe-perm
-npm run build
+# stack exec elmify --system-ghc
+# stack exec docs --system-ghc
 
 # Run the Servant+Elm Application
 stack exec caldwell --system-ghc

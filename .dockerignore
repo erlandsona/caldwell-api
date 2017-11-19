@@ -9,6 +9,9 @@ docker-compose.yml
 .git/
 .gitignore
 
+elm-stuff/
+node_modules/
+
 # Superfluous files created by Vim
 Session.vim
 tags

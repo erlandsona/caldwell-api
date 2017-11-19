@@ -28,4 +28,4 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY . $WORKDIR
 
-CMD ./bin/build
+CMD bin/build

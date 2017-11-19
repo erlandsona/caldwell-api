@@ -8,9 +8,7 @@ import Control.Monad.Reader (runReaderT)
 import Database.Persist.Sql
 import Database.Persist.Postgresql (runSqlPool)
 import Hilt.Server
-import Network.HTTP.Types
 import Network.Wai
-import Network.Wai.Application.Static
 import Network.Wai.Handler.Warp (run)
 import Servant
 import Servant.Generic
@@ -43,15 +41,7 @@ main = do
             }
 
     let server :: Routes AsServer
-        server = Routes
-            { api = toServant apiServer
-            , root = serveDirectoryWith $ (defaultWebAppSettings "public")
-                { ss404Handler = return (\_ responder ->
-                                            responder $
-                                            responseFile status404 [] "public/404.html" Nothing
-                                        )
-                }
-            }
+        server = Routes { api = toServant apiServer }
 
     let middlewares :: Middleware
         middlewares = compression

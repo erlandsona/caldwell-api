@@ -12,14 +12,12 @@ import Servant.Generic
 import Models
 
 
+-- Abstraction over Content Types
 data Routes path = Routes
     { api :: path :- ApiRouter
-    , root :: path :- Raw
     } deriving Generic
 
 type Router = ToServant (Routes AsApi)
-
-
 
 type Version = "v1"
 type Api = "api"
