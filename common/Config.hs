@@ -80,7 +80,10 @@ setLogger Production = logStdout
 makePool :: Environment -> IO ConnectionPool
 makePool env = do
     let keys = ["host=", "dbname=", "user=", "password=", "port="]
-        envs = ["DB_HOST", "DB_NAME", "DB_USERNAME", "DB_PASSWORD", "DB_PORT"]
+        envs =
+            case env of
+                Production -> ["RDS_HOSTNAME", "RDS_DB_NAME", "RDS_USERNAME", "RDS_PASSWORD", "RDS_PORT"]
+                _ -> ["DB_HOST", "DB_NAME", "DB_USERNAME", "DB_PASSWORD", "DB_PORT"]
         defaults =
             [ "localhost"
             , "caldwell" <>
