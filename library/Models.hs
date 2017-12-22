@@ -36,7 +36,7 @@ Gig
 
 -- Venue json
 --     name Text
---     -- locationId LocationId
+--     locationId LocationId
 --     deriving Show
 
 -- Location json

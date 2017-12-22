@@ -35,6 +35,7 @@ gigs =
     , Gig (date "2017-11-15 00:00") "Belcourt Taps -- Time TBD"
     , Gig (date "2017-11-27 19:00") "Bunganut Pig"
     , Gig (date "2017-11-28 19:45") "Blue Bar"
+    , Gig (date "2017-12-01 21:00") "Belcourt Taps"
     ]
 
 date :: String -> UTCTime

@@ -6,8 +6,8 @@ maintainer: austin@erlandson.com
 copyright: 2017 Austin Erlandson
 license: MIT
 github: erlandsona/caldwell-api
-extra-source-files:
-  - README.md
+# extra-source-files:
+#   - ../README.md
 
 dependencies:
   - base >=4.7 && <5
@@ -46,7 +46,7 @@ default-extensions:
   - OverloadedStrings
 
 library:
-  source-dirs: common
+  source-dirs: library
   when:
     - condition: (flag(dev)) || (flag(library-only))
       then:
@@ -69,7 +69,7 @@ library:
 executables:
   caldwell: &defaults
     main: Server.hs
-    source-dirs: app
+    source-dirs: executables
     ghc-options:
       - -Wall
       - -Werror
@@ -85,12 +85,12 @@ executables:
   docs:
     <<: *defaults
     main: Docs.hs
-    source-dirs: app
+    source-dirs: executables
 
   elmify:
     <<: *defaults
     main: Elmify.hs
-    source-dirs: app
+    source-dirs: executables
 
   seed:
     <<: *defaults

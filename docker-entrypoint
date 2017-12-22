@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+while true; do
+  ag -ag '.hs' | entr -r stack build --system-ghc --fast --exec "stack exec --system-ghc caldwell";
+done
