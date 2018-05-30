@@ -1,71 +1,79 @@
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 
--- Libs
-import Data.Proxy
-import Data.Text as T
-import Elm
-import Servant.Elm
-    ( ElmOptions(..)
-    , UrlPrefix(Static)
-    , defElmOptions
-    , generateElmForAPIWith
-    )
+module Elmify where
 
--- Source
-import Config
-import Models
-import Routes
+-- -- Libs
+-- import Data.Proxy
+-- import Data.Text as T
+-- import Elm
+-- import Elm.Export.Persist (EntId) -- Redundant???
+-- import GHC.Generics (Generic)
+-- import Servant.Elm
+--     ( ElmOptions(..)
+--     , UrlPrefix(Static)
+--     , defElmOptions
+--     , generateElmForAPIWith
+--     )
 
-main :: IO ()
-main = do
-    -- elmFormat <- createProcess (proc "elm-format" ["--yes", "--stdin"])
-    --     { std_in = CreatePipe
-    --     , std_out = CreatePipe
-    --     }
-    -- let formattedSpec = elmFormat $ T.unlines elmText
+-- -- Source
+-- import Config
+-- import Models
+-- import Routes
 
-    env <- lookupSetting "ENV" Development
+-- main :: IO ()
+-- main = do
+--     -- elmFormat <- createProcess (proc "elm-format" ["--yes", "--stdin"])
+--     --     { std_in = CreatePipe
+--     --     , std_out = CreatePipe
+--     --     }
+--     -- let formattedSpec = elmFormat $ T.unlines elmText
 
-    let options :: ElmOptions
-        options =
-            case env of
-                Production -> defElmOptions { urlPrefix = Static "https://api.caldwell.band" }
-                _ -> defElmOptions
+--     env <- lookupSetting "ENV" Development
 
-    let elmText :: [Text]
-        elmText =
-            ( defElmImports
-            : mkElmTypeD'Encoders (Proxy :: Proxy Account)
-            : mkElmTypeD'Encoders (Proxy :: Proxy Gig)
-            : generateElmForAPIWith options (Proxy :: Proxy ApiRouter)
-            )
+--     let options :: ElmOptions
+--         options =
+--             case env of
+--                 Production -> defElmOptions { urlPrefix = Static "https://api.caldwell.band" }
+--                 _ -> defElmOptions
 
-    let spec :: Spec
-        spec = Spec ["Server"] elmText
+--     let elmText :: [Text]
+--         elmText =
+--             ( defElmImports
+--             : mkElmTypeD'Encoders (Proxy :: Proxy (EntId Account))
+--             : mkElmTypeD'Encoders (Proxy :: Proxy (EntId Gig))
+--             : generateElmForAPIWith options (Proxy :: Proxy ApiRouter)
+--             )
 
-    specsToDir [spec] "app"
+--     let spec :: Spec
+--         spec = Spec ["Server"] elmText
 
-
-
-mkElmTypeD'Encoders :: ElmType a => a -> Text
-mkElmTypeD'Encoders a = T.intercalate "\n\n\n"
-    [ toElmTypeSource a
-    , toElmDecoderSource a
-    , toElmEncoderSource a
-    ]
+--     specsToDir [spec] "app"
 
 
-defElmImports :: Text
-defElmImports =
-  T.unlines
-    [ "import Date exposing (Date(..))"
-    , "import Exts.Json.Decode exposing (decodeDate)"
-    , "import Http"
-    , "import Json.Decode exposing (..)"
-    , "import Json.Decode.Pipeline exposing (..)"
-    , "import Json.Encode"
-    , "import String"
-    ]
+
+-- mkElmTypeD'Encoders :: ElmType a => a -> Text
+-- mkElmTypeD'Encoders a = T.intercalate "\n\n\n"
+--     [ toElmTypeSource a
+--     , toElmDecoderSource a
+--     , toElmEncoderSource a
+--     ]
+
+
+
+-- defElmImports :: Text
+-- defElmImports =
+--   T.unlines
+--     [ "import Date exposing (Date(..))"
+--     , "import Exts.Json.Decode exposing (decodeDate)"
+--     , "import Http"
+--     , "import Json.Decode exposing (..)"
+--     , "import Json.Decode.Pipeline exposing (..)"
+--     , "import Json.Encode"
+--     , "import String"
+--     ]
 
 

@@ -5,6 +5,7 @@
 
 -- Libs
 import Control.Monad.Reader (runReaderT)
+import Database.Persist
 import Database.Persist.Sql
 import Database.Persist.Postgresql (runSqlPool)
 import Hilt.Server
@@ -12,12 +13,12 @@ import Network.Wai
 import Network.Wai.Handler.Warp (run)
 import Servant
 import Servant.Generic
--- import WaiAppStatic.Types
 
 -- Source
 import Config
 import Models
-import Routes
+import Routes (Router, Routes, ApiRoutes)
+import qualified Routes as R
 
 main :: IO ()
 main = do
@@ -31,22 +32,25 @@ main = do
     runSqlPool doMigrations pool
     putStrLn $ "Serving on PORT: " ++ show port
 
-    let convertApp :: App :~> Handler
-        convertApp = NT (flip runReaderT settings . runApp)
+    let appToHandler :: App a -> Handler a
+        appToHandler a = runReaderT (runApp a) settings
 
-    let apiServer :: ApiRoutes AsServer
-        apiServer = ApiRoutes
-            { accounts = enter convertApp allAccounts
-            , gigs = enter convertApp allGigs
-            }
-
-    let server :: Routes AsServer
-        server = Routes { api = toServant apiServer }
 
     let middlewares :: Middleware
         middlewares = compression
                     . allowCsrf
                     . corsified
+
+    let apiServer :: ApiRoutes AsServer
+        apiServer = R.ApiRoutes
+            { R.allAccounts = appToHandler (runDb $ selectList [] [] :: App [Entity Account])
+            , R.allShows = appToHandler (runDb $ selectList [] [] :: App [Entity Gig])
+            , R.createShow = appToHandler . (runDb . insertEntity :: Gig -> App (Entity Gig))
+            , R.deleteShow = appToHandler . ((NoContent <$) . runDb . delete :: Key Gig -> App NoContent)
+            }
+
+    let server :: Routes AsServer
+        server = R.Routes { R.api = toServant apiServer }
 
     let app :: Application
         app = middlewares
@@ -54,17 +58,6 @@ main = do
             $ toServant server
 
     run port . logger $ app
-
-
-allAccounts :: App [Account]
-allAccounts = do
-    dbAccounts <- runDb $ selectList [] []
-    return $ entityVal <$> dbAccounts
-
-allGigs :: App [Gig]
-allGigs = do
-    dbGigs <- runDb $ selectList [] []
-    return $ entityVal <$> dbGigs
 
 doMigrations :: SqlPersistT IO ()
 doMigrations = do

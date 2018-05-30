@@ -1,46 +1,50 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
+-- {-# LANGUAGE DataKinds #-}
+-- {-# LANGUAGE DeriveGeneric #-}
+-- {-# LANGUAGE FlexibleInstances #-}
+-- {-# LANGUAGE MultiParamTypeClasses #-}
+-- {-# LANGUAGE TypeOperators #-}
+-- {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-import Data.ByteString.Lazy (ByteString, writeFile)
-import Data.Proxy
-import Data.Text.Lazy.Encoding (encodeUtf8)
-import Data.Text.Lazy (pack)
-import Data.Time (UTCTime(..), fromGregorian, secondsToDiffTime)
-import Prelude hiding (writeFile)
-import Servant.Docs
-import Turtle
+module Docs where
 
-import Routes
-import Models
+-- import Data.ByteString.Lazy (ByteString, writeFile)
+-- import Data.Proxy
+-- import Data.Text.Lazy.Encoding (encodeUtf8)
+-- import Data.Text.Lazy (pack)
+-- import Data.Time (UTCTime(..), fromGregorian, secondsToDiffTime)
+-- import Prelude hiding (writeFile)
+-- import Servant.Docs
+-- import Turtle
 
-
-
--- Stuff and things
-
-docsBS :: ByteString
-docsBS = encodeUtf8
-       . pack
-       . markdown
-       $ docsWithIntros [intro] (Proxy :: Proxy Router)
-
-  where intro = DocIntro "Welcome" ["This is our super webservice's API.", "Enjoy!"]
+-- import Routes
+-- import Models
 
 
-instance ToSample Account where
-    toSamples _ = singleSample $ Account "Austin" "Erlandson" "austin@erlandson.com"
+
+-- -- Stuff and things
+
+-- docsBS :: ByteString
+-- docsBS = encodeUtf8
+--        . pack
+--        . markdown
+--        $ docsWithIntros [intro] (Proxy :: Proxy Router)
+
+--   where intro = DocIntro "Welcome" ["This is our super webservice's API.", "Enjoy!"]
 
 
-instance ToSample Gig where
-    toSamples _ = singleSample $ Gig (UTCTime (fromGregorian 2017 7 21) (secondsToDiffTime 0)) "A Place in Nashville"
+-- instance ToSample Account where
+--     toSamples _ = singleSample $ Account "Austin" "Erlandson" "austin@erlandson.com"
 
 
-main :: IO ()
-main = do
-    echo "Writing: DOCS.md"
-    writeFile "DOCS.md" (docsBS :: ByteString)
+-- instance ToSample Gig where
+--     toSamples _ = singleSample $ Gig (UTCTime (fromGregorian 2017 7 21) (secondsToDiffTime 0)) "A Place in Nashville"
+
+-- -- instance ToSample Int where
+-- --     toSamples _ = singleSample $ 1
+
+-- main :: IO ()
+-- main = do
+--     echo "Writing: DOCS.md"
+--     writeFile "DOCS.md" (docsBS :: ByteString)
 
 

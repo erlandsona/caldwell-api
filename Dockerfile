@@ -1,4 +1,4 @@
-FROM fpco/stack-build:lts-9.10
+FROM fpco/stack-build:lts-11.10
 
 ########################
 # Extra System Deps

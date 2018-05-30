@@ -10,7 +10,7 @@ github: erlandsona/caldwell-api
 #   - ../README.md
 
 dependencies:
-  - base >=4.7 && <5
+  - base
 
   - aeson
   - bytestring
@@ -24,6 +24,7 @@ dependencies:
   - persistent
   - persistent-postgresql
   - persistent-template
+  # - require
   - safe
   - servant-docs
   - servant-elm
@@ -82,15 +83,15 @@ executables:
       - condition: flag(library-only)
         buildable: false
 
-  docs:
-    <<: *defaults
-    main: Docs.hs
-    source-dirs: executables
+  # docs:
+  #   <<: *defaults
+  #   main: Docs.hs
+  #   source-dirs: executables
 
-  elmify:
-    <<: *defaults
-    main: Elmify.hs
-    source-dirs: executables
+  # elmify:
+  #   <<: *defaults
+  #   main: Elmify.hs
+  #   source-dirs: executables
 
   seed:
     <<: *defaults

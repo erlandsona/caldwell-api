@@ -91,7 +91,7 @@ makePool env = do
                     Production -> ""
                     Development -> "_development"
                     Test -> "_test"
-            , "postgres", "", "5432"
+            , "postgres", "postgres", "9876"
             ]
     envVars <- traverse lookupEnv envs
 

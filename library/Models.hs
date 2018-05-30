@@ -1,38 +1,41 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Models where
 
 
-import Data.Aeson
-import Data.Text
+import Data.Text (Text)
 import Data.Time (UTCTime)
-import Database.Persist.Sql
 import Database.Persist.TH
-import Elm
-import GHC.Generics
+    ( persistLowerCase
+    , share
+    , mkPersist
+    , sqlSettings
+    , mkMigrate
+    )
+import GHC.Generics (Generic)
 
 -- DB Models
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
-Account
+Account json
     firstName Text
     lastName Text
     email Text
     UniqueEmail email
-    deriving Show Generic
+    deriving Generic Show
 
-Gig
+Gig json
     date UTCTime
     venue Text
     -- venueId VenueId
-    deriving Show Generic
+    deriving Generic Show
 
 -- Venue json
 --     name Text
@@ -48,11 +51,3 @@ Gig
 --     zip Integer
 --     deriving Show
 |]
-
-instance ElmType Account
-instance ToJSON Account
-instance FromJSON Account
-
-instance ElmType Gig
-instance ToJSON Gig
-instance FromJSON Gig
